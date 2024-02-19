@@ -5,7 +5,7 @@ website:
   title: "Michael D. Siciliano"
   navbar:
     left:
-      - href: index.md
+      - href: index.qmd
         text: About
       - research.qmd
       - teaching.qmd
