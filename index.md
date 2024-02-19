@@ -1,0 +1,22 @@
+---
+title: "Michael D. Siciliano"
+---
+
+::: columns
+::: {.column width="30%"}
+![](images/M.Siciliano_Photo.jpg)
+
+![](images/NGL_Logo.jpg)
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="65%"}
+I am an Associate Professor in the [Department of Public Administration](https://cuppa.uic.edu/academics/pa/) at the University of Illinois Chicago. I currently co-direct the [Networks and Governance Lab](https://cuppa.uic.edu/net-gov-lab/) and am an Associate Editor at the Journal of Public Administration Research and Theory. My work focuses on human and organizational collaboration. In particular, I am interested in how actors work together to solve complex policy problems that cross political and functional boundaries.
+
+I currently teach classes on network analysis, data analysis, collaborative governance, and public policy. I have been awarded the University of Illinois Chicago's Teaching Recognition Award (2016 & 2021), Silver Circle Teaching Award (2018), and the Honoring our Professors Excellence (HOPE) Award (2017).
+
+My masters degree is in Public Policy and Management from the Heinz School at [Carnegie Mellon University](https://www.heinz.cmu.edu/). I received my PhD in Public Policy and Administration from the Graduate School of Public and International Affairs at the [University of Pittsburgh](https://www.gspia.pitt.edu/).
+:::
+:::
