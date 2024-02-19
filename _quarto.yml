@@ -1,0 +1,21 @@
+project:
+  type: website
+
+website:
+  title: "Michael D. Siciliano"
+  navbar:
+    left:
+      - href: index.qmd
+        text: About
+      - research.qmd
+      - teaching.qmd
+      - cv.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+editor: visual
+

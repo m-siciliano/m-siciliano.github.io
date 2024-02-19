@@ -1,0 +1,37 @@
+---
+title: "Teaching"
+description: I primarily teach courses in data analysis, network analysis, collaborative governance, and public policy. Below you will find a list of the courses I have taught with a brief description and link to the most recent syllabus. 
+editor: visual
+---
+
+
+### Advanced Data Analysis I (PA 541)  
+##### [**PA 541 - Syllabus**](files/Siciliano_PA_541_AdvancedDataAnalysis_I_Syllabus_2021.pdf)  
+Introduction to modern econometric and statistical techniques for applied researchers and analysts.
+
+### Advanced Data Analysis II (PA 542)
+
+##### [**PA 542 - Syllabus**](files/PA_542_AdvancedDataAnalysisII_Syllabus_Spring_2020.pdf)
+Maximum likelihood, count regression models, regression discontinuity designs, instrumental variables, panel data methods, multilevel models, and text analysis.
+
+### Social Network Analysis (PA 594)
+##### [**PA 594 - Syllabus**](files/Siciliano_PA_594_SocialNetworkAnalysis_2020.pdf)
+Network data collection and management, network visualization, inferential methods of analysis including exponential random graph models (ERGM) and stochastic actor oriented models (SAOMs).
+
+### Collaborative Management and Governance Networks (PA 513)
+
+##### [**PA 513 - Syllabus**](files/Siciliano_PA_513_GovernanceNetworksSyllabus_Fall_2020.pdf)
+
+Network forms of organization in the public sector. Covers network formation, accountability, performance, governance, and structure.
+
+### Policy Development, Analysis, and Implementation
+##### [**PA 506 - Syllabus**](files/PA_506_Policy_Analysis_Syllabus_Spring_2016_v3.pdf)
+Policy analysis as problem solving. Create, critically assess, and communicate policy-relevant information to various stakeholders and decision-makers. 
+
+### Introduction to the Policy Process (PA 210)
+##### [**PA 210 - Syllabus**](files/PA_210_Policy_Process_Syllabus_Spring_2021.pdf)
+Theories, concepts and frameworks for public policy design, implementation, and evaluation.
+
+### Strategic Management and Performance Measurement (PA 521)
+##### [**PA 521 - Syllabus**](files/Siciliano_PA_521_Syllabus_Spring_2016_V2.pdf)
+Tools for public and nonprofit management of organizational change. Identification, measurement, and utilization of performance outputs and outcomes. 

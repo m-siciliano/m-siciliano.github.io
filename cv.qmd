@@ -1,0 +1,6 @@
+---
+title: "CV"
+editor: visual
+---
+
+Click [**here**](files/Michael_D_Siciliano_CV_June_2022.pdf) for my current (or perhaps somewhat current) CV.
