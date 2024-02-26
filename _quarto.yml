@@ -1,5 +1,11 @@
 project:
   type: website
+  output-dir: _site
+  render: 
+    - index.qmd
+    - research.qmd
+    - teaching.qmd
+    - cv.qmd
 
 website:
   title: "Michael D. Siciliano"
