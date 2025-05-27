@@ -9,9 +9,6 @@ author:
     affiliation-url: https://cuppa.uic.edu/academics/pa/
 date: 05-27-2025
 categories: [ERGM] # self-defined categories
-citation: 
-  url: https://m-siciliano.github.io/ 
-image: preview-image.png
 draft: false # setting this to `true` will prevent your post from appearing on your listing page until you're ready!
 editor: source
 ---
