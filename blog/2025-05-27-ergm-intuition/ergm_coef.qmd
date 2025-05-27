@@ -10,7 +10,7 @@ author:
 date: 05-27-2025
 categories: [ERGM] # self-defined categories
 citation: 
-  url: https://samanthacsik.github.io/posts/2022-10-24-my-blog-post/ 
+  url: https://m-siciliano.github.io/ 
 image: preview-image.png
 draft: false # setting this to `true` will prevent your post from appearing on your listing page until you're ready!
 ---
@@ -28,7 +28,7 @@ library(ggplot2)
 ```
 
 
-Now, let's suppose we go out in the world and we collect some network data and we want to model the data to get a better sense of the processes that may be at work in determining the ties.  Ratehr than actually collecting data, let's play god for a minute and simulate some data. The benefit of this, for our purposes, is that we know the true data generating process and so know the true coefficient values that generated our observed data. We will call this `g.true`. Below, we will assume we don't know these coefficient values, and will simulate a bunch of networks with different values to try and hone in on the correct coefficients. 
+Now, let's suppose we go out in the world and we collect some network data and we want to model the data to get a better sense of the processes that may be at work in determining the ties.  Rather than actually collecting data, let's play god for a minute and simulate some data. The benefit of this, for our purposes, is that we know the true data generating process and so know the true coefficient values that generated our observed data. We will call this `g.true`. Below, we will assume we don't know these coefficient values, and will simulate a bunch of networks with different values to try and hone in on the correct coefficients. 
 
 ```{r}
 set.seed(181318)
