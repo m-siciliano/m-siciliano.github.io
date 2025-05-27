@@ -6,6 +6,7 @@ project:
     - research.qmd
     - teaching.qmd
     - cv.qmd
+    - blogs.qmd
 
 website:
   title: "Michael D. Siciliano"
@@ -16,6 +17,7 @@ website:
       - research.qmd
       - teaching.qmd
       - cv.qmd
+      - blogs.qmd
 
 format:
   html:
