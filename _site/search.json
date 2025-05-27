@@ -1,21 +1,35 @@
 [
   {
+    "objectID": "blogs.html",
+    "href": "blogs.html",
+    "title": "MDS Blog",
+    "section": "",
+    "text": "No matching items"
+  },
+  {
+    "objectID": "teaching.html",
+    "href": "teaching.html",
+    "title": "Teaching",
+    "section": "",
+    "text": "Advanced Data Analysis I (PA 541)\n\nPA 541 - Syllabus\nIntroduction to modern econometric and statistical techniques for applied researchers and analysts.\n\n\n\nAdvanced Data Analysis II (PA 542)\n\nPA 542 - Syllabus\nMaximum likelihood, count regression models, regression discontinuity designs, instrumental variables, panel data methods, multilevel models, and text analysis.\n\n\n\nSocial Network Analysis (PA 594)\n\nPA 594 - Syllabus\nNetwork data collection and management, network visualization, inferential methods of analysis including exponential random graph models (ERGM) and stochastic actor oriented models (SAOMs).\n\n\n\nCollaborative Management and Governance Networks (PA 513)\n\nPA 513 - Syllabus\nNetwork forms of organization in the public sector. Covers network formation, accountability, performance, governance, and structure.\n\n\n\nPolicy Development, Analysis, and Implementation\n\nPA 506 - Syllabus\nPolicy analysis as problem solving. Create, critically assess, and communicate policy-relevant information to various stakeholders and decision-makers.\n\n\n\nIntroduction to the Policy Process (PA 210)\n\nPA 210 - Syllabus\nTheories, concepts and frameworks for public policy design, implementation, and evaluation.\n\n\n\nStrategic Management and Performance Measurement (PA 521)\n\nPA 521 - Syllabus\nTools for public and nonprofit management of organizational change. Identification, measurement, and utilization of performance outputs and outcomes."
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Michael D. Siciliano",
+    "title": "About",
     "section": "",
     "text": "I am an Associate Professor in the Department of Public Administration at the University of Illinois Chicago. I currently co-direct the Networks and Governance Lab and am an Associate Editor at the Journal of Public Administration Research and Theory. My work focuses on human and organizational collaboration. In particular, I am interested in how actors work together to solve complex policy problems that cross political and functional boundaries.\nI currently teach classes on network analysis, data analysis, collaborative governance, and public policy. I have been awarded the University of Illinois Chicago’s Teaching Recognition Award (2016 & 2021), Silver Circle Teaching Award (2018), and the Honoring our Professors Excellence (HOPE) Award (2017).\nMy masters degree is in Public Policy and Management from the Heinz School at Carnegie Mellon University. I received my PhD in Public Policy and Administration from the Graduate School of Public and International Affairs at the University of Pittsburgh."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
-  },
-  {
     "objectID": "research.html",
     "href": "research.html",
+    "title": "Research and Publications",
+    "section": "",
+    "text": "Siciliano, M., Wang, W., Hu, Q., Medina, A., & Krackhardt, D. (2022). Networks in the Public Sector. Cambridge Element Series in Public and Nonprofit Administration"
+  },
+  {
+    "objectID": "research.html#books",
+    "href": "research.html#books",
     "title": "Research and Publications",
     "section": "",
     "text": "Siciliano, M., Wang, W., Hu, Q., Medina, A., & Krackhardt, D. (2022). Networks in the Public Sector. Cambridge Element Series in Public and Nonprofit Administration"
@@ -35,24 +49,10 @@
     "text": "BOOK CHAPTERS\nLi, J., Sánchez, J., Carr, J. B., & Siciliano, M. D. (2021). Local governments and shared services: Insights on institutional mechanisms, partners, and purpose. In Handbook of Collaborative Public Management (pp. 179-195)\nCarr, J., & Siciliano, M. (2019). Beyond Political Consolidation: Prospects for Effective Local Governance through Self-Organized Collaborative Networks. In M. Pagano (Ed.), The People’s Money: Pensions, Debt, and Government Services. University of Illinois Press\nSiciliano, M., Clayton, W., & Johnson, D. J. (2015). Managing for Resilience Across Multiple Scales of Action in Joplin, Missouri. In D. C. Downey (Ed.), Cities and Disasters. Boca Raton, FL: CRC Press\nSiciliano, M., Comfort, L. K., & Okada, A. (2012). Evolving Systems in Crisis Management. In I. Helsloot, A. Boin, B. Jacobs, & L. K. Comfort (Eds.), Mega-Crises: Understanding the Prospects, Nature, Characteristics, and the Effects of Cataclysmic Events. Springfield, Illinois: Charles C. Thomas Press"
   },
   {
-    "objectID": "teaching.html",
-    "href": "teaching.html",
-    "title": "Teaching",
-    "section": "",
-    "text": "Advanced Data Analysis I (PA 541)\n\nPA 541 - Syllabus\nIntroduction to modern econometric and statistical techniques for applied researchers and analysts.\n\n\n\nAdvanced Data Analysis II (PA 542)\n\nPA 542 - Syllabus\nMaximum likelihood, count regression models, regression discontinuity designs, instrumental variables, panel data methods, multilevel models, and text analysis.\n\n\n\nSocial Network Analysis (PA 594)\n\nPA 594 - Syllabus\nNetwork data collection and management, network visualization, inferential methods of analysis including exponential random graph models (ERGM) and stochastic actor oriented models (SAOMs).\n\n\n\nCollaborative Management and Governance Networks (PA 513)\n\nPA 513 - Syllabus\nNetwork forms of organization in the public sector. Covers network formation, accountability, performance, governance, and structure.\n\n\n\nPolicy Development, Analysis, and Implementation\n\nPA 506 - Syllabus\nPolicy analysis as problem solving. Create, critically assess, and communicate policy-relevant information to various stakeholders and decision-makers.\n\n\n\nIntroduction to the Policy Process (PA 210)\n\nPA 210 - Syllabus\nTheories, concepts and frameworks for public policy design, implementation, and evaluation.\n\n\n\nStrategic Management and Performance Measurement (PA 521)\n\nPA 521 - Syllabus\nTools for public and nonprofit management of organizational change. Identification, measurement, and utilization of performance outputs and outcomes."
-  },
-  {
     "objectID": "cv.html",
     "href": "cv.html",
     "title": "CV",
     "section": "",
     "text": "Click here for my current (or perhaps somewhat current) CV."
-  },
-  {
-    "objectID": "research.html#books",
-    "href": "research.html#books",
-    "title": "Research and Publications",
-    "section": "",
-    "text": "Siciliano, M., Wang, W., Hu, Q., Medina, A., & Krackhardt, D. (2022). Networks in the Public Sector. Cambridge Element Series in Public and Nonprofit Administration"
   }
 ]
