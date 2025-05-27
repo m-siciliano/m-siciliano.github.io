@@ -1,1 +1,1 @@
-Sitemap: https://m-siciliano.github.io/my.site/sitemap.xml
+Sitemap: https://m-siciliano.github.io/sitemap.xml

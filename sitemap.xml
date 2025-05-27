@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://m-siciliano.github.io/my.site/blogs.html</loc>
-    <lastmod>2025-05-27T15:34:33.885Z</lastmod>
+    <loc>https://m-siciliano.github.io/blogs/2025-05-27-ergm-intuition/index.html</loc>
+    <lastmod>2025-05-27T20:01:47.963Z</lastmod>
   </url>
   <url>
-    <loc>https://m-siciliano.github.io/my.site/teaching.html</loc>
-    <lastmod>2024-02-26T18:31:14.928Z</lastmod>
+    <loc>https://m-siciliano.github.io/cv.html</loc>
+    <lastmod>2024-02-26T18:31:14.891Z</lastmod>
   </url>
   <url>
-    <loc>https://m-siciliano.github.io/my.site/index.html</loc>
-    <lastmod>2025-05-27T16:39:09.451Z</lastmod>
-  </url>
-  <url>
-    <loc>https://m-siciliano.github.io/my.site/research.html</loc>
+    <loc>https://m-siciliano.github.io/research.html</loc>
     <lastmod>2024-02-26T18:31:14.926Z</lastmod>
   </url>
   <url>
-    <loc>https://m-siciliano.github.io/my.site/cv.html</loc>
-    <lastmod>2024-02-26T18:31:14.891Z</lastmod>
+    <loc>https://m-siciliano.github.io/index.html</loc>
+    <lastmod>2025-05-27T16:39:09.451Z</lastmod>
+  </url>
+  <url>
+    <loc>https://m-siciliano.github.io/teaching.html</loc>
+    <lastmod>2025-05-27T19:04:28.687Z</lastmod>
+  </url>
+  <url>
+    <loc>https://m-siciliano.github.io/blogs.html</loc>
+    <lastmod>2025-05-27T19:52:59.894Z</lastmod>
   </url>
 </urlset>
