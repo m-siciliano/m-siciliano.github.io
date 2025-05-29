@@ -16,7 +16,10 @@ draft: false # setting this to `true` will prevent your post from appearing on y
 
 This short blog post will give some intuition behind the coefficient values that are estimated when you run an ERGM.
 
-Let's first load out libraries.
+
+## Load some libraries
+
+Let's first load our libraries.
 
 ```{r}
 #| warning: false
@@ -26,7 +29,9 @@ library(statnet)
 library(ggplot2)
 ```
 
-Now, let's suppose we go out in the world and we collect some network data and we want to model the data to get a better sense of the processes that may be at work in determining the ties. Rather than actually collecting data, let's play god for a minute and simulate some data. The benefit of this, for our purposes, is that we know the true data generating process and so know the true coefficient values that generated our observed data. We will call this `g.true`. Below, we will assume we don't know these coefficient values, and will simulate a bunch of networks with different values to try and hone in on the correct coefficients.
+## Create Simulated Data
+
+Now, let's suppose we go out in the world and we collect some network data. Ultimately we want to model the data to get a better sense of the processes that may be at work in determining the ties. Rather than actually collecting data, let's play god for a minute and simulate some data. The benefit of this, for our purposes, is that we know the true data generating process and so know the true coefficient values that generated our observed data. We will call this `g.true`. 
 
 ```{r}
 set.seed(181318)
@@ -42,9 +47,19 @@ true.mutual = summary(g.true ~ mutual)
 plot(g.true)
 ```
 
-Now let's assume we don't know the model that generated that data. So we don't know these coefficients, but we have the data and we know how many edges and mutual ties there are in our data. Let's also assume we have some theory which (correctly) tells us that the two key processes that built up by our data can be captured by the following ergm terms: edges and mutual. Thus, our nodes have some underlying tendency to want to form ties (this is our edge term) and also a tendency to want to form mutual ties.
+## Identify the True Parameter Values
 
-So now we need to explore possible values for our coefficients. Let's try -2 and .5. And given those values, we will simulate 200 different networks that could be derived given those coefficients.
+Now will assume we don't know these coefficient values used to simulate the data.We will therefore proceed by simulating a bunch of networks with different values to try and hone in on the correct coefficients. This may have you asking, well, how do we know we have obtained the "correct" coefficients. If you have a taken a course on maximum likelihood, you know that in a nutshell, you are searching for the parameter values that make the data you observed the most probably, given your model. We will do the same thing here with our network data.
+
+As we saw above, we have variables that generated our data and hopefully our theory correctly guided us to use include them in our model. With ERGMs, we are attempted to reproduce a set of target statistics. Given our model with an edge term and a mutual term, we would like our model to produce data (i.e., simulate data) that make our observed statistics on these terms the most probable.
+
+O.k., lets see this in action. So now let's assume we don't know the true model that generated g.true network. So we don't know the coefficients, but we have the observed data and we know how many edges and mutual ties there are in our data. 
+
+Again, let's also assume we have some theory which (correctly) tells us that the two key processes that built up by our data can be captured by the following ergm terms: edges and mutual. Thus, our nodes have some underlying tendency to want to form ties (this is our edge term) and also a tendency to want to form mutual ties.
+
+So now we need to explore possible values for our coefficients. Obviously, there are algorithms operating under the hood of the `ergm` function that do this much more efficiently, but to give you some intuitiion, we will just try out some values until we find what look like good estimates. 
+
+Let's try -2 and .5. And given those values, we will simulate 200 different networks that could be derived given those coefficients.
 
 ```{r}
 g.sim <- simulate(network(57) ~ edges + mutual, coef =c(-2, .5), nsim = 200, sequential = FALSE)
@@ -165,5 +180,7 @@ ggplot(g.sim.data, aes(x = g.sim.edges, y = g.sim.mutual)) + geom_point() +
 ```
 
 So we can see that when we get the coefficients right, in this case those that match the true data generating process, we simulate networks that make our observed network central in that distribution of the simulated networks.
+
+## Summary
 
 To summarize Koskinen and Snijders (2013): What we are doing to solve the likelihood equation is we choose a value of theta, simulate graphs x1, x2,..xm, calculate from that sample of graphs of the mean of the statistics of interest (here we are looking at edges and mutual), and then check whether the estimated mean from the simulated graphs is equal to the observed value of those statistics. If the difference is not zero, we then choose another value of theta and repeat the process. This is done until we find value for which the estimated mean of our statistics from the simulated graphs equals our observed values for those statistics. This is the MLE. Note, a brute force approach such as attempted above, is not very efficient. Statnet has built in algorithms that make the search process much more efficient. But the idea is the same.
