@@ -207,6 +207,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#where-do-ergm-parameter-values-come-from" id="toc-where-do-ergm-parameter-values-come-from" class="nav-link active" data-scroll-target="#where-do-ergm-parameter-values-come-from">Where do ERGM Parameter Values Come From?</a></li>
+  <li><a href="#load-some-libraries" id="toc-load-some-libraries" class="nav-link" data-scroll-target="#load-some-libraries">Load some libraries</a></li>
+  <li><a href="#create-simulated-data" id="toc-create-simulated-data" class="nav-link" data-scroll-target="#create-simulated-data">Create Simulated Data</a></li>
+  <li><a href="#identify-the-true-parameter-values" id="toc-identify-the-true-parameter-values" class="nav-link" data-scroll-target="#identify-the-true-parameter-values">Identify the True Parameter Values</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -220,12 +224,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="where-do-ergm-parameter-values-come-from" class="level2">
 <h2 class="anchored" data-anchor-id="where-do-ergm-parameter-values-come-from">Where do ERGM Parameter Values Come From?</h2>
 <p>This short blog post will give some intuition behind the coefficient values that are estimated when you run an ERGM.</p>
-<p>Let’s first load out libraries.</p>
+</section>
+<section id="load-some-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="load-some-libraries">Load some libraries</h2>
+<p>Let’s first load our libraries.</p>
 <div class="cell" data-messsage="false">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(statnet)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now, let’s suppose we go out in the world and we collect some network data and we want to model the data to get a better sense of the processes that may be at work in determining the ties. Rather than actually collecting data, let’s play god for a minute and simulate some data. The benefit of this, for our purposes, is that we know the true data generating process and so know the true coefficient values that generated our observed data. We will call this <code>g.true</code>. Below, we will assume we don’t know these coefficient values, and will simulate a bunch of networks with different values to try and hone in on the correct coefficients.</p>
+</section>
+<section id="create-simulated-data" class="level2">
+<h2 class="anchored" data-anchor-id="create-simulated-data">Create Simulated Data</h2>
+<p>Now, let’s suppose we go out in the world and we collect some network data. Ultimately we want to model the data to get a better sense of the processes that may be at work in determining the ties. Rather than actually collecting data, let’s play god for a minute and simulate some data. The benefit of this, for our purposes, is that we know the true data generating process and so know the true coefficient values that generated our observed data. We will call this <code>g.true</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">181318</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>g.true <span class="ot">&lt;-</span> <span class="fu">simulate</span>(<span class="fu">network</span>(<span class="dv">57</span>) <span class="sc">~</span> edges <span class="sc">+</span> mutual, <span class="at">coef=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">2</span>), <span class="at">nsim =</span> <span class="dv">1</span>)</span>
@@ -248,8 +258,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Now let’s assume we don’t know the model that generated that data. So we don’t know these coefficients, but we have the data and we know how many edges and mutual ties there are in our data. Let’s also assume we have some theory which (correctly) tells us that the two key processes that built up by our data can be captured by the following ergm terms: edges and mutual. Thus, our nodes have some underlying tendency to want to form ties (this is our edge term) and also a tendency to want to form mutual ties.</p>
-<p>So now we need to explore possible values for our coefficients. Let’s try -2 and .5. And given those values, we will simulate 200 different networks that could be derived given those coefficients.</p>
+</section>
+<section id="identify-the-true-parameter-values" class="level2">
+<h2 class="anchored" data-anchor-id="identify-the-true-parameter-values">Identify the True Parameter Values</h2>
+<p>Now will assume we don’t know these coefficient values used to simulate the data.We will therefore proceed by simulating a bunch of networks with different values to try and hone in on the correct coefficients. This may have you asking, well, how do we know we have obtained the “correct” coefficients. If you have a taken a course on maximum likelihood, you know that in a nutshell, you are searching for the parameter values that make the data you observed the most probably, given your model. We will do the same thing here with our network data.</p>
+<p>As we saw above, we have variables that generated our data and hopefully our theory correctly guided us to use include them in our model. With ERGMs, we are attempted to reproduce a set of target statistics. Given our model with an edge term and a mutual term, we would like our model to produce data (i.e., simulate data) that make our observed statistics on these terms the most probable.</p>
+<p>O.k., lets see this in action. So now let’s assume we don’t know the true model that generated g.true network. So we don’t know the coefficients, but we have the observed data and we know how many edges and mutual ties there are in our data.</p>
+<p>Again, let’s also assume we have some theory which (correctly) tells us that the two key processes that built up by our data can be captured by the following ergm terms: edges and mutual. Thus, our nodes have some underlying tendency to want to form ties (this is our edge term) and also a tendency to want to form mutual ties.</p>
+<p>So now we need to explore possible values for our coefficients. Obviously, there are algorithms operating under the hood of the <code>ergm</code> function that do this much more efficiently, but to give you some intuitiion, we will just try out some values until we find what look like good estimates.</p>
+<p>Let’s try -2 and .5. And given those values, we will simulate 200 different networks that could be derived given those coefficients.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>g.sim <span class="ot">&lt;-</span> <span class="fu">simulate</span>(<span class="fu">network</span>(<span class="dv">57</span>) <span class="sc">~</span> edges <span class="sc">+</span> mutual, <span class="at">coef =</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, .<span class="dv">5</span>), <span class="at">nsim =</span> <span class="dv">200</span>, <span class="at">sequential =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -386,6 +403,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>So we can see that when we get the coefficients right, in this case those that match the true data generating process, we simulate networks that make our observed network central in that distribution of the simulated networks.</p>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
 <p>To summarize Koskinen and Snijders (2013): What we are doing to solve the likelihood equation is we choose a value of theta, simulate graphs x1, x2,..xm, calculate from that sample of graphs of the mean of the statistics of interest (here we are looking at edges and mutual), and then check whether the estimated mean from the simulated graphs is equal to the observed value of those statistics. If the difference is not zero, we then choose another value of theta and repeat the process. This is done until we find value for which the estimated mean of our statistics from the simulated graphs equals our observed values for those statistics. This is the MLE. Note, a brute force approach such as attempted above, is not very efficient. Statnet has built in algorithms that make the search process much more efficient. But the idea is the same.</p>
 
 
