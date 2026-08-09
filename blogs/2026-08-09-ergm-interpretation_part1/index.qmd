@@ -3,6 +3,8 @@ title: "Fitting and Interpreting ERGMs, Part 1"
 description: "Starting from a null model and building up through dyadic independent terms — what each coefficient actually tells you."
 date: 2026-08-09
 categories: [ergm, sna, r]
+image: thumbnail.png
+image-alt: "simple network image"
 ---
 
 In an [earlier post](../2025-05-27-ergm-intuition/index.qmd) I worked through
@@ -257,6 +259,6 @@ and interpret — and it is also what the earlier simulation showed to be wrong.
 The excess reciprocity and clustering in the observed network are precisely the
 patterns dyadic independent terms cannot capture.
 
-The next post takes up the dyadic dependent and the geometrically weighted statistics along with the model
-degeneracy that makes them tricky, and how to check whether a fitted model
-actually reproduces the network you started with.
+[The next post](../2026-08-09-ergm-interpretation_part2/index.qmd) takes up dyadic
+dependent terms along with the model degeneracy, and how to
+check whether a fitted model actually reproduces the network you started with.

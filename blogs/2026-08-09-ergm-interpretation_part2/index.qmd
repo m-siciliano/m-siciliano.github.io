@@ -1,0 +1,256 @@
+---
+title: "Fitting and Interpreting ERGMs, Part 2"
+description: "Dyadic dependent terms, why the triangle term breaks, and how to tell whether your model actually fits."
+date: 2026-08-09
+categories: [ergm, sna, r]
+image: thumbnail.png
+image-alt: "mcmc diagnostic plot"
+---
+
+[Part 1](../2026-08-09-ergm-interpretation_part1/index.qmd) built up an ERGM using terms
+that assume ties form independently of one another. That assumption made the
+models easy to fit and easy to interpret, but it was not a great model. We saw that the actual observed advice network had more reciprocated ties and more
+triangles than an independence model could produce.
+
+This post takes up the terms that can represent those patterns, the estimation
+problems they bring with them, and how to check whether a fitted model actually
+reproduces the network you started with.
+
+```{r}
+#| warning: false
+#| message: false
+
+library(statnet)
+
+load("par5.RData")
+load("par.friends.RData")
+```
+
+## Dependence among ties
+
+The moment we say that whether $i$ sends a tie to $j$ depends on the other ties
+in the network, we have left logistic regression behind. Two teachers may be
+more likely to exchange advice because they already share a partner, or because
+advice tends to be reciprocated. Those are statements about ties conditioning on
+other ties in the network.
+
+The classic way to capture clustering was a simple `triangle` term, counting the
+triangles a tie would close. A positive coefficient would say triangles appear
+more often than chance would produce. This makes intuitive sense, but, as we will see, it is a pretty
+reliable way to break your model.
+
+The modern alternative is the geometrically weighted edgewise shared partner
+statistic, `gwesp`. Rather than counting each additional shared partner equally,
+it discounts them: going from zero shared partners to one matters a great deal,
+from five to six much less. That diminishing return is both substantively
+sensible and far better behaved during estimation.
+
+```{r}
+mod6 <- ergm(par5 ~ edges + mutual + edgecov(par.friends) +
+               nodeicov("COMP.1") + nodeocov("COMP.1") +
+               twopath + gwesp(0.25, fixed = TRUE))
+summary(mod6)
+```
+
+The decay parameter — `0.25` here — controls how quickly additional shared
+partners are discounted. Setting `fixed = TRUE` treats it as known rather than
+estimating it, which is the common practice though you can also allow for it to be estimated as well.  For more information see [Hunter and Handcock (2006)](https://www.jstor.org/stable/27594198) as well as [Hunter (2007)](https://www.sciencedirect.com/science/article/abs/pii/S0378873306000396?via%3Dihub)
+
+## A full model
+
+Let's build a full model here. This is the full specification from the published
+analysis (https://onlinelibrary.wiley.com/doi/abs/10.1111/puar.12362): structural terms for reciprocity, twopaths, edgewise and dyadwise
+shared partners, and in- and out-degree distributions, alongside the attribute
+and friendship effects from Part 1.
+
+```{r}
+final <- ergm(par5 ~ edges + mutual + twopath +
+                gwesp(0.693, fixed = TRUE) + gwdsp(0.693, fixed = TRUE) +
+                edgecov(par.friends) +
+                gwidegree(0.693, fixed = TRUE) + gwodegree(0.693, fixed = TRUE) +
+                nodematch("GRADE") + absdiff("YRSDIST") +
+                nodeicov("YRSDIST") + nodeocov("YRSDIST") +
+                nodeifactor("EDUC") + nodeofactor("EDUC") +
+                nodeicov("EFFIC") + nodeocov("EFFIC") +
+                nodeicov("COMP.1") + nodeocov("COMP.1"))
+
+summary(final)
+```
+
+
+The `gwidegree` and `gwodegree` terms deserve a word of caution, because their
+signs read backwards from what people expect. A negative coefficient indicates
+*centralization* — degree concentrated among fewer actors — rather than the
+opposite. Reading these the wrong way is a common error. Here is a great explainer by [Levy and colleagues](https://figshare.com/articles/poster/Interpretation_of_GW-Degree_Estimates_in_ERGMs/3465020?file=5454032) along with a link to an awesome shiny app to see this in action.
+
+## Degeneracy
+
+Let's move on to what happens when our model fails to converge and thus is degenerate. Model degeneracy means the fitted parameters imply a
+distribution that places nearly all its probability on networks that look
+nothing like the one we observed. 
+
+The `triangle` term is a well known problem as an ergm term for producing degenerate models. We will use a simulated high
+school friendship network that comes with the `statnet` package for demonstration purposes.
+
+```{r}
+data("faux.magnolia.high")
+magnolia <- faux.magnolia.high
+plot(magnolia, vertex.cex = 0.75)
+```
+
+Now try to fit a model with an edges term and a triangle term:
+
+```{r}
+#| error: true
+fit <- ergm(magnolia ~ edges + triangle,
+            control = control.ergm(seed = 1))
+```
+
+The estimation fails. Notice that it does not return a poorly fitting model. Rather,
+it returns nothing at all, which means there is no fitted object to run
+diagnostics on. The failure happens upstream of anything we could inspect. And because of this, we will need to build a poor model ourselves.
+
+### Watching it fail
+
+To see what is going wrong, we can turn the problem around. Instead of asking
+which coefficients best fit the data, we will pick coefficients ourselves and
+ask what networks they imply. 
+
+Let's choose a modest positive triangle coefficient. From this, we will generate a chain of
+networks from it:
+
+```{r}
+sim.chain <- simulate(magnolia ~ edges + triangle,
+                      coef = c(-3, 0.5),
+                      nsim = 500,
+                      output = "stats")
+```
+
+Each row is one network drawn from the model. Plotting the edge count across the
+chain, with the observed value marked in red:
+
+```{r}
+plot(sim.chain[, "edges"], type = "l",
+     xlab = "Simulation", ylab = "Edges",
+     main = "Edge count across simulated networks")
+abline(h = summary(magnolia ~ edges), col = "red", lwd = 2)
+```
+
+And the triangle count:
+
+```{r}
+plot(sim.chain[, "triangle"], type = "l",
+     xlab = "Simulation", ylab = "Triangles",
+     main = "Triangle count across simulated networks")
+abline(h = summary(magnolia ~ triangle), col = "red", lwd = 2)
+```
+
+This is degeneracy made visible. The chain does not settle anywhere near the
+observed network. Here the red line is the observed number of edges and triangles. In both plots, the simulated network statistics for edges and triangles climbs, and keeps climbing, toward networks far denser than
+anything in the data. A model whose simulated
+networks look like this cannot possibly be fit to the observed one, because
+there is no region of the parameter space where the observed network sits near
+the middle of the model's own distribution.
+
+Compare the magnitudes directly:
+
+```{r}
+summary(magnolia ~ edges + triangle)
+colMeans(sim.chain)
+```
+
+### Why the triangle term does this
+
+The mechanism of why this is happening is worth understanding, because it explains why this problem is
+specific to terms like `triangle` rather than a general failing of ERGMs.
+
+Every tie that closes a triangle makes additional triangles more likely, which
+makes additional ties more likely, which closes more triangles. The statistic
+feeds back on itself with nothing to dampen it. Adding the hundredth shared
+partner counts exactly as much as adding the first, so the model has no way to
+express "clustering is good, but in moderation."
+
+### The fix
+
+The fix is not a better optimizer or a longer chain. It is a
+better specification.
+
+Two changes we can make to our specification. First, replace `triangle` with `gwesp`, whose geometric discounting
+means each additional shared partner contributes less than the one before. This
+is precisely the dampening the raw triangle count lacks. Second, give the model
+attribute terms that account for clustering the structural term was otherwise
+being asked to absorb on its own.
+
+```{r}
+fit2 <- ergm(magnolia ~ edges + gwesp(0.25, fixed = TRUE) +
+               nodematch("Grade") + nodematch("Race") + nodematch("Sex"),
+             control = control.ergm(seed = 1,
+                                    MCMC.samplesize = 50000,
+                                    MCMC.interval = 1000))
+summary(fit2)
+```
+
+This one estimates. Now we have a fitted object, so we can look at the
+diagnostics that were unavailable before:
+
+```{r}
+mcmc.diagnostics(fit2)
+```
+
+Read the trace plots on the left first. Each shows the difference between the
+simulated and observed value of a statistic as the chain progresses. What you
+want is a stationary band with values bouncing around zero with no trend. The density plots on the right should be roughly
+symmetric and centered at zero, indicating that simulated networks resemble the
+observed one on each statistic.
+
+Compare these with the runaway chains we saw above.
+There the statistics moved quickly away from the observed values and never returned. Here they bounce around them randomly and are always centered on the true value.
+
+This model takes a few minutes to run. Depending on your network's size and model complexity, some ERGM specifications run for hours or long. Starting a model before bed
+and hoping to find a converged one in the morning is a reasonable routine.
+
+### A point to remember
+
+Notice what actually changed between the model that failed and the model that
+worked. Students form friendships with others in the same grade, of the same
+race, of the same sex, and those homophilous ties produce triangles as a
+byproduct. In our failed model, we asked the triangle term to explain all of that clustering on its own, and so it kept wanting to build more and more triangles and resulted in a degenerate model. Thus you need to think carefully about the processes at work in your network and use the ergm terms that capture those processes in your model.
+
+Degeneracy usually looks like a computational problem and usually is not one. It
+is the model telling you that your specification is wrong.
+
+## Goodness of fit
+
+Convergence is not fit. A model can converge cleanly and still fail to reproduce
+different features of the network. There are two questions worth asking, and they are different.
+
+First, does the model reproduce the statistics it was fit on?
+
+```{r}
+gof(mod6, GOF = ~ model)
+```
+
+Second — and more demanding — does it reproduce features it was *not* fit on?
+
+```{r}
+plot(gof(mod6))
+```
+
+This gives the standard out-of-model comparisons: degree distribution, edgewise
+shared partners, geodesic distances. In each panel the observed network is the
+solid line and the simulated distribution is the boxplots. You want the observed
+line sitting inside the bulk of the simulated range. Where it strays outside,
+the model is missing something.
+
+You can also name your own statistic, like the triad census, and a model reproducing the full census is capturing local structure well:
+
+```{r}
+plot(gof(mod6 ~ triadcensus))
+```
+
+A note on `mcmc.diagnostics`: since version 3.2 of the estimation algorithm, the
+diagnostic plots no longer confirm that mean simulated statistics match the
+observed ones. Use them to assess mixing and convergence, and use `gof(GOF =
+~model)` for the statistics themselves. 
+
+
