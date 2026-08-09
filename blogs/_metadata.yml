@@ -1,7 +1,16 @@
 # options specified here will apply to all posts in this folder
 
-# re-render posts only when a change to the source file is made ----
+author:
+  - name: Michael D. Siciliano
+    url: https://m-siciliano.github.io/
+    orcid: 0000-0001-8688-8685
+    affiliation: Networks and Governance Lab, Department of Public Policy, Management, and Analytics, University of Illinois Chicago
+    affiliation-url: https://cuppa.uic.edu/academics/pa/
 freeze: auto
+toc: true
+
+# freeze: auto means to re-render posts only when a change to the source file is made ----
+
 
 # enable banner style title blocks ----
 title-block-banner: true

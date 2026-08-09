@@ -1,21 +1,16 @@
 ---
 title: "ERGM Parameter Values"
 description: "Some intuition about the ERGM coefficients"
-author:
-  - name: Michael D. Siciliano
-    url: https://m-siciliano.github.io/
-    orcid: 0000-0001-8688-8685
-    affiliation: Networks and Governance Lab, Department of Public Policy, Management, and Analytics , University of Illinois Chicago
-    affiliation-url: https://cuppa.uic.edu/academics/pa/
 date: 2025-05-27
-categories: [ERGM] # self-defined categories
+categories: [ergm] # self-defined categories
+image: thumbnail.png
+image-alt: "Simulated network graph used to illustrate how ERGM coefficients are estimated"
 draft: false # setting this to `true` will prevent your post from appearing on your listing page until you're ready!
 ---
 
 ## Where do ERGM Parameter Values Come From?
 
 This short blog post will give some intuition behind the coefficient values that are estimated when you run an ERGM.
-
 
 ## Load some libraries
 
@@ -31,7 +26,7 @@ library(ggplot2)
 
 ## Create Simulated Data
 
-Now, let's suppose we go out in the world and we collect some network data. Ultimately we want to model the data to get a better sense of the processes that may be at work in determining the ties. Rather than actually collecting data, let's play god for a minute and simulate some data. The benefit of this, for our purposes, is that we know the true data generating process and so know the true coefficient values that generated our observed data. We will call this `g.true`. 
+Now, let's suppose we go out in the world and we collect some network data. Ultimately we want to model the data to get a better sense of the processes that may be at work in determining the ties. Rather than actually collecting data, let's play god for a minute and simulate some data. The benefit of this, for our purposes, is that we know the true data generating process and so know the true coefficient values that generated our observed data. We will call this `g.true`.
 
 ```{r}
 set.seed(181318)
@@ -53,11 +48,11 @@ Now will assume we don't know these coefficient values used to simulate the data
 
 As we saw above, we have variables that generated our data and hopefully our theory correctly guided us to use include them in our model. With ERGMs, we are attempted to reproduce a set of target statistics. Given our model with an edge term and a mutual term, we would like our model to produce data (i.e., simulate data) that make our observed statistics on these terms the most probable.
 
-O.k., lets see this in action. So now let's assume we don't know the true model that generated g.true network. So we don't know the coefficients, but we have the observed data and we know how many edges and mutual ties there are in our data. 
+O.k., lets see this in action. So now let's assume we don't know the true model that generated g.true network. So we don't know the coefficients, but we have the observed data and we know how many edges and mutual ties there are in our data.
 
 Again, let's also assume we have some theory which (correctly) tells us that the two key processes that built up by our data can be captured by the following ergm terms: edges and mutual. Thus, our nodes have some underlying tendency to want to form ties (this is our edge term) and also a tendency to want to form mutual ties.
 
-So now we need to explore possible values for our coefficients. Obviously, there are algorithms operating under the hood of the `ergm` function that do this much more efficiently, but to give you some intuitiion, we will just try out some values until we find what look like good estimates. 
+So now we need to explore possible values for our coefficients. Obviously, there are algorithms operating under the hood of the `ergm` function that do this much more efficiently, but to give you some intuitiion, we will just try out some values until we find what look like good estimates.
 
 Let's try -2 and .5. And given those values, we will simulate 200 different networks that could be derived given those coefficients.
 
