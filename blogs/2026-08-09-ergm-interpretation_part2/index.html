@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael D. Siciliano">
+<meta name="dcterms.date" content="2026-08-09">
+<meta name="description" content="Dyadic dependent terms, why the triangle term breaks, and how to tell whether your model actually fits.">
+
+<title>Fitting and Interpreting ERGMs, Part 2 – Michael D. Siciliano</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="google-site-verification" content="wmk6bxER3-ttJtcJTQ5ET0wgPTw3tdtN-3O_AGnTTVA">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Fitting and Interpreting ERGMs, Part 2 – Michael D. Siciliano">
+<meta property="og:description" content="Dyadic dependent terms, why the triangle term breaks, and how to tell whether your model actually fits.">
+<meta property="og:image" content="https://m-siciliano.github.io/blogs/2026-08-09-ergm-interpretation_part2/data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==">
+<meta property="og:site_name" content="Michael D. Siciliano">
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Michael D. Siciliano</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../research.html"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../teaching.html"> 
+<span class="menu-text">Teaching</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../cv.html"> 
+<span class="menu-text">CV</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../blogs.html"> 
+<span class="menu-text">MDS Blog</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="mailto:sicilian@uic.edu"> <i class="bi bi-envelope" role="img" aria-label="Email">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://scholar.google.com/citations?user=Pq3gu_MAAAAJ"> <i class="bi bi-mortarboard-fill" role="img" aria-label="Google Scholar">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/m-siciliano"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Fitting and Interpreting ERGMs, Part 2</h1>
+                  <div>
+        <div class="description">
+          Dyadic dependent terms, why the triangle term breaks, and how to tell whether your model actually fits.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">ergm</div>
+                <div class="quarto-category">sna</div>
+                <div class="quarto-category">r</div>
+              </div>
+                  </div>
+  </div>
+    
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <p class="author"><a href="https://m-siciliano.github.io/">Michael D. Siciliano</a> <a href="https://orcid.org/0000-0001-8688-8685" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+    </div>
+    <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://cuppa.uic.edu/academics/pa/">
+              Networks and Governance Lab, Department of Public Policy, Management, and Analytics, University of Illinois Chicago
+              </a>
+            </p>
+        </div>
+    </div>
+
+  <div class="quarto-title-meta">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">August 9, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#dependence-among-ties" id="toc-dependence-among-ties" class="nav-link active" data-scroll-target="#dependence-among-ties">Dependence among ties</a></li>
+  <li><a href="#a-full-model" id="toc-a-full-model" class="nav-link" data-scroll-target="#a-full-model">A full model</a></li>
+  <li><a href="#degeneracy" id="toc-degeneracy" class="nav-link" data-scroll-target="#degeneracy">Degeneracy</a>
+  <ul class="collapse">
+  <li><a href="#watching-it-fail" id="toc-watching-it-fail" class="nav-link" data-scroll-target="#watching-it-fail">Watching it fail</a></li>
+  <li><a href="#why-the-triangle-term-does-this" id="toc-why-the-triangle-term-does-this" class="nav-link" data-scroll-target="#why-the-triangle-term-does-this">Why the triangle term does this</a></li>
+  <li><a href="#the-fix" id="toc-the-fix" class="nav-link" data-scroll-target="#the-fix">The fix</a></li>
+  <li><a href="#a-point-to-remember" id="toc-a-point-to-remember" class="nav-link" data-scroll-target="#a-point-to-remember">A point to remember</a></li>
+  </ul></li>
+  <li><a href="#goodness-of-fit" id="toc-goodness-of-fit" class="nav-link" data-scroll-target="#goodness-of-fit">Goodness of fit</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<p><a href="../2026-08-09-fitting-ergms/index.qmd">Part 1</a> built up an ERGM using terms that assume ties form independently of one another. That assumption made the models easy to fit and easy to interpret, but it was not a great model. We saw that the actual observed advice network had more reciprocated ties and more triangles than an independence model could produce.</p>
+<p>This post takes up the terms that can represent those patterns, the estimation problems they bring with them, and how to check whether a fitted model actually reproduces the network you started with.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(statnet)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"par5.RData"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"par.friends.RData"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="dependence-among-ties" class="level2">
+<h2 class="anchored" data-anchor-id="dependence-among-ties">Dependence among ties</h2>
+<p>The moment we say that whether <span class="math inline">\(i\)</span> sends a tie to <span class="math inline">\(j\)</span> depends on the other ties in the network, we have left logistic regression behind. Two teachers may be more likely to exchange advice because they already share a partner, or because advice tends to be reciprocated. Those are statements about ties conditioning on other ties in the network.</p>
+<p>The classic way to capture clustering was a simple <code>triangle</code> term, counting the triangles a tie would close. A positive coefficient would say triangles appear more often than chance would produce. This makes intuitive sense, but, as we will see, it is a pretty reliable way to break your model.</p>
+<p>The modern alternative is the geometrically weighted edgewise shared partner statistic, <code>gwesp</code>. Rather than counting each additional shared partner equally, it discounts them: going from zero shared partners to one matters a great deal, from five to six much less. That diminishing return is both substantively sensible and far better behaved during estimation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod6 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(par5 <span class="sc">~</span> edges <span class="sc">+</span> mutual <span class="sc">+</span> <span class="fu">edgecov</span>(par.friends) <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">nodeicov</span>(<span class="st">"COMP.1"</span>) <span class="sc">+</span> <span class="fu">nodeocov</span>(<span class="st">"COMP.1"</span>) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>               twopath <span class="sc">+</span> <span class="fu">gwesp</span>(<span class="fl">0.25</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Obtaining the responsible dyads.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Evaluating the predictor and response matrix.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Maximizing the pseudolikelihood.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finished MPLE.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Iteration 1 of at most 60:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.7995.
+Estimating equations are not within tolerance region.
+Iteration 2 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0453.
+Convergence test p-value: 0.0036. Converged with 99% confidence.
+Finished MCMLE.
+Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
+Bridging between the dyad-independent submodel and the full model...
+Setting up bridge sampling...
+Using 16 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 .
+Bridging finished.
+
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod6)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = par5 ~ edges + mutual + edgecov(par.friends) + 
+    nodeicov("COMP.1") + nodeocov("COMP.1") + twopath + gwesp(0.25, 
+    fixed = TRUE))
+
+Monte Carlo Maximum Likelihood Results:
+
+                     Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges                -2.29249    0.77176      0  -2.970 0.002973 ** 
+mutual                2.12271    0.55573      0   3.820 0.000134 ***
+edgecov.par.friends   2.21759    0.39791      0   5.573  &lt; 1e-04 ***
+nodeicov.COMP.1      -0.05867    0.17096      0  -0.343 0.731465    
+nodeocov.COMP.1      -0.53600    0.15549      0  -3.447 0.000567 ***
+twopath              -0.25622    0.08878      0  -2.886 0.003900 ** 
+gwesp.OTP.fixed.0.25  0.65013    0.24472      0   2.657 0.007893 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+     Null Deviance: 424.2  on 306  degrees of freedom
+ Residual Deviance: 215.2  on 299  degrees of freedom
+ 
+AIC: 229.2  BIC: 255.3  (Smaller is better. MC Std. Err. = 0.587)</code></pre>
+</div>
+</div>
+<p>The decay parameter — <code>0.25</code> here — controls how quickly additional shared partners are discounted. Setting <code>fixed = TRUE</code> treats it as known rather than estimating it, which is the common practice though you can also allow for it to be estimated as well. For more information see <a href="https://www.jstor.org/stable/27594198">Hunter and Handcock (2006)</a> as well as <a href="https://www.sciencedirect.com/science/article/abs/pii/S0378873306000396?via%3Dihub">Hunter (2007)</a></p>
+</section>
+<section id="a-full-model" class="level2">
+<h2 class="anchored" data-anchor-id="a-full-model">A full model</h2>
+<p>Let’s build a full model here. This is the full specification from the published analysis (https://onlinelibrary.wiley.com/doi/abs/10.1111/puar.12362): structural terms for reciprocity, twopaths, edgewise and dyadwise shared partners, and in- and out-degree distributions, alongside the attribute and friendship effects from Part 1.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>final <span class="ot">&lt;-</span> <span class="fu">ergm</span>(par5 <span class="sc">~</span> edges <span class="sc">+</span> mutual <span class="sc">+</span> twopath <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">gwesp</span>(<span class="fl">0.693</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">gwdsp</span>(<span class="fl">0.693</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                <span class="fu">edgecov</span>(par.friends) <span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                <span class="fu">gwidegree</span>(<span class="fl">0.693</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">gwodegree</span>(<span class="fl">0.693</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                <span class="fu">nodematch</span>(<span class="st">"GRADE"</span>) <span class="sc">+</span> <span class="fu">absdiff</span>(<span class="st">"YRSDIST"</span>) <span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">nodeicov</span>(<span class="st">"YRSDIST"</span>) <span class="sc">+</span> <span class="fu">nodeocov</span>(<span class="st">"YRSDIST"</span>) <span class="sc">+</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">nodeifactor</span>(<span class="st">"EDUC"</span>) <span class="sc">+</span> <span class="fu">nodeofactor</span>(<span class="st">"EDUC"</span>) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>                <span class="fu">nodeicov</span>(<span class="st">"EFFIC"</span>) <span class="sc">+</span> <span class="fu">nodeocov</span>(<span class="st">"EFFIC"</span>) <span class="sc">+</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">nodeicov</span>(<span class="st">"COMP.1"</span>) <span class="sc">+</span> <span class="fu">nodeocov</span>(<span class="st">"COMP.1"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Obtaining the responsible dyads.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Evaluating the predictor and response matrix.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Maximizing the pseudolikelihood.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finished MPLE.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Iteration 1 of at most 60:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1 Optimizing with step length 0.3996.
+The log-likelihood improved by 3.1252.
+Estimating equations are not within tolerance region.
+Iteration 2 of at most 60:
+1 Optimizing with step length 0.7205.
+The log-likelihood improved by 1.9944.
+Estimating equations are not within tolerance region.
+Iteration 3 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 1.1224.
+Estimating equations are not within tolerance region.
+Iteration 4 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.1319.
+Estimating equations are not within tolerance region.
+Iteration 5 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.2300.
+Estimating equations are not within tolerance region.
+Iteration 6 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.2670.
+Estimating equations are not within tolerance region.
+Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
+Iteration 7 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.1653.
+Estimating equations are not within tolerance region.
+Iteration 8 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.2047.
+Estimating equations are not within tolerance region.
+Iteration 9 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.1357.
+Estimating equations are not within tolerance region.
+Iteration 10 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.1230.
+Estimating equations are not within tolerance region.
+Iteration 11 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.2045.
+Estimating equations are not within tolerance region.
+Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
+Iteration 12 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.2235.
+Estimating equations are not within tolerance region.
+Iteration 13 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0720.
+Convergence test p-value: 0.9658. Not converged with 99% confidence; increasing sample size.
+Iteration 14 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0808.
+Convergence test p-value: 0.5956. Not converged with 99% confidence; increasing sample size.
+Iteration 15 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0497.
+Convergence test p-value: 0.0102. Not converged with 99% confidence; increasing sample size.
+Iteration 16 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0232.
+Convergence test p-value: 0.0008. Converged with 99% confidence.
+Finished MCMLE.
+Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
+Bridging between the dyad-independent submodel and the full model...
+Setting up bridge sampling...
+Using 16 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 .
+Bridging finished.
+
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(final)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = par5 ~ edges + mutual + twopath + gwesp(0.693, 
+    fixed = TRUE) + gwdsp(0.693, fixed = TRUE) + edgecov(par.friends) + 
+    gwidegree(0.693, fixed = TRUE) + gwodegree(0.693, fixed = TRUE) + 
+    nodematch("GRADE") + absdiff("YRSDIST") + nodeicov("YRSDIST") + 
+    nodeocov("YRSDIST") + nodeifactor("EDUC") + nodeofactor("EDUC") + 
+    nodeicov("EFFIC") + nodeocov("EFFIC") + nodeicov("COMP.1") + 
+    nodeocov("COMP.1"))
+
+Monte Carlo Maximum Likelihood Results:
+
+                      Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges                 -0.18111    1.25375      0  -0.144 0.885143    
+mutual                 2.41769    0.67118      0   3.602 0.000316 ***
+twopath               -0.40883    0.17010      0  -2.403 0.016243 *  
+gwesp.OTP.fixed.0.693  0.49688    0.22486      0   2.210 0.027120 *  
+gwdsp.OTP.fixed.0.693 -0.13433    0.18956      0  -0.709 0.478555    
+edgecov.par.friends    2.32202    0.45127      0   5.146  &lt; 1e-04 ***
+gwideg.fixed.0.693     2.11882    1.85930      0   1.140 0.254462    
+gwodeg.fixed.0.693    -0.60774    1.10362      0  -0.551 0.581853    
+nodematch.GRADE        0.82028    0.39230      0   2.091 0.036535 *  
+absdiff.YRSDIST       -0.01239    0.01702      0  -0.728 0.466639    
+nodeicov.YRSDIST      -0.01852    0.02180      0  -0.850 0.395536    
+nodeocov.YRSDIST       0.01504    0.01970      0   0.763 0.445312    
+nodeifactor.EDUC.2     0.04171    0.42987      0   0.097 0.922707    
+nodeofactor.EDUC.2    -0.01456    0.37385      0  -0.039 0.968939    
+nodeicov.EFFIC        -0.77157    0.30325      0  -2.544 0.010948 *  
+nodeocov.EFFIC        -0.68239    0.28110      0  -2.428 0.015201 *  
+nodeicov.COMP.1       -0.63802    0.28730      0  -2.221 0.026369 *  
+nodeocov.COMP.1       -0.62110    0.26053      0  -2.384 0.017128 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+     Null Deviance: 424.2  on 306  degrees of freedom
+ Residual Deviance: 184.3  on 288  degrees of freedom
+ 
+AIC: 220.3  BIC: 287.3  (Smaller is better. MC Std. Err. = 0.5125)</code></pre>
+</div>
+</div>
+<p>The <code>gwidegree</code> and <code>gwodegree</code> terms deserve a word of caution, because their signs read backwards from what people expect. A negative coefficient indicates <em>centralization</em> — degree concentrated among fewer actors — rather than the opposite. Reading these the wrong way is a common error. Here is a great explainer by <a href="https://figshare.com/articles/poster/Interpretation_of_GW-Degree_Estimates_in_ERGMs/3465020?file=5454032">Levy and colleagues</a> along with a link to an awesome shiny app to see this in action.</p>
+</section>
+<section id="degeneracy" class="level2">
+<h2 class="anchored" data-anchor-id="degeneracy">Degeneracy</h2>
+<p>Let’s move on to what happens when our model fails to converge and thus is degenerate. Model degeneracy means the fitted parameters imply a distribution that places nearly all its probability on networks that look nothing like the one we observed.</p>
+<p>The <code>triangle</code> term is a well known problem as an ergm term for producing degenerate models. We will use a simulated high school friendship network that comes with the <code>statnet</code> package for demonstration purposes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"faux.magnolia.high"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>magnolia <span class="ot">&lt;-</span> faux.magnolia.high</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(magnolia, <span class="at">vertex.cex =</span> <span class="fl">0.75</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now try to fit a model with an edges term and a triangle term:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ergm</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> triangle,</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">control =</span> <span class="fu">control.ergm</span>(<span class="at">seed =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Obtaining the responsible dyads.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Evaluating the predictor and response matrix.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Maximizing the pseudolikelihood.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finished MPLE.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Iteration 1 of at most 60:</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `ergm.MCMLE()`:
+! Number of edges in a simulated network exceeds that in the observed by a factor of more than 20. This is a strong indicator of model degeneracy or a very poor starting parameter configuration. If you are reasonably certain that neither of these is the case, increase the MCMLE.density.guard control.ergm() parameter.</code></pre>
+</div>
+</div>
+<p>The estimation fails. Notice that it does not return a poorly fitting model. Rather, it returns nothing at all, which means there is no fitted object to run diagnostics on. The failure happens upstream of anything we could inspect. And because of this, we will need to build a poor model ourselves.</p>
+<section id="watching-it-fail" class="level3">
+<h3 class="anchored" data-anchor-id="watching-it-fail">Watching it fail</h3>
+<p>To see what is going wrong, we can turn the problem around. Instead of asking which coefficients best fit the data, we will pick coefficients ourselves and ask what networks they imply.</p>
+<p>Let’s choose a modest positive triangle coefficient. From this, we will generate a chain of networks from it:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>sim.chain <span class="ot">&lt;-</span> <span class="fu">simulate</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> triangle,</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">coef =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="fl">0.5</span>),</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">nsim =</span> <span class="dv">500</span>,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">output =</span> <span class="st">"stats"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■                         26% |  ETA:  3s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■                 52% |  ETA:  4s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■             67% |  ETA:  4s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■          78% |  ETA:  3s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■        84% |  ETA:  2s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     93% |  ETA:  1s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   99% |  ETA:  0s</code></pre>
+</div>
+</div>
+<p>Each row is one network drawn from the model. Plotting the edge count across the chain, with the observed value marked in red:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"edges"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Edges"</span>,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Edge count across simulated networks"</span>)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> edges), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And the triangle count:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"triangle"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Triangles"</span>,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Triangle count across simulated networks"</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> triangle), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is degeneracy made visible. The chain does not settle anywhere near the observed network. Here the red line is the observed number of edges and triangles. In both plots, the simulated network statistics for edges and triangles climbs, and keeps climbing, toward networks far denser than anything in the data. A model whose simulated networks look like this cannot possibly be fit to the observed one, because there is no region of the parameter space where the observed network sits near the middle of the model’s own distribution.</p>
+<p>Compare the magnitudes directly:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> triangle)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   edges triangle 
+     974      169 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(sim.chain)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    edges  triangle 
+ 109728.5 1311768.2 </code></pre>
+</div>
+</div>
+</section>
+<section id="why-the-triangle-term-does-this" class="level3">
+<h3 class="anchored" data-anchor-id="why-the-triangle-term-does-this">Why the triangle term does this</h3>
+<p>The mechanism of why this is happening is worth understanding, because it explains why this problem is specific to terms like <code>triangle</code> rather than a general failing of ERGMs.</p>
+<p>Every tie that closes a triangle makes additional triangles more likely, which makes additional ties more likely, which closes more triangles. The statistic feeds back on itself with nothing to dampen it. Adding the hundredth shared partner counts exactly as much as adding the first, so the model has no way to express “clustering is good, but in moderation.”</p>
+</section>
+<section id="the-fix" class="level3">
+<h3 class="anchored" data-anchor-id="the-fix">The fix</h3>
+<p>The fix is not a better optimizer or a longer chain. It is a better specification.</p>
+<p>Two changes we can make to our specification. First, replace <code>triangle</code> with <code>gwesp</code>, whose geometric discounting means each additional shared partner contributes less than the one before. This is precisely the dampening the raw triangle count lacks. Second, give the model attribute terms that account for clustering the structural term was otherwise being asked to absorb on its own.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">gwesp</span>(<span class="fl">0.25</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">nodematch</span>(<span class="st">"Grade"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Race"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Sex"</span>),</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">control =</span> <span class="fu">control.ergm</span>(<span class="at">seed =</span> <span class="dv">1</span>,</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.samplesize =</span> <span class="dv">50000</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.interval =</span> <span class="dv">1000</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Obtaining the responsible dyads.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Evaluating the predictor and response matrix.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Maximizing the pseudolikelihood.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finished MPLE.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Iteration 1 of at most 60:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■                                 5% |  ETA: 41s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■                             14% |  ETA: 30s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■                          24% |  ETA: 26s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■                       34% |  ETA: 22s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■                    43% |  ETA: 19s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■                 52% |  ETA: 16s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■               62% |  ETA: 12s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■            71% |  ETA:  9s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■        82% |  ETA:  6s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      91% |  ETA:  3s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   99% |  ETA:  0s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1 Optimizing with step length 0.9550.
+The log-likelihood improved by 6.5439.
+Estimating equations are not within tolerance region.
+Iteration 2 of at most 60:
+Sampling ■■■                                8% |  ETA: 15s
+Sampling ■■■■■■■■■                         27% |  ETA: 12s
+Sampling ■■■■■■■■■■■■■■■                   45% |  ETA:  9s
+Sampling ■■■■■■■■■■■■■■■■■■■■              64% |  ETA:  6s
+Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■        83% |  ETA:  3s
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0914.
+Convergence test p-value: &lt; 0.0001. Converged with 99% confidence.
+Finished MCMLE.
+Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
+Bridging between the dyad-independent submodel and the full model...
+Setting up bridge sampling...
+Using 16 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 .
+Bridging finished.
+
+This model was fit using MCMC.  To examine model diagnostics and check
+for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = magnolia ~ edges + gwesp(0.25, fixed = TRUE) + 
+    nodematch("Grade") + nodematch("Race") + nodematch("Sex"), 
+    control = control.ergm(seed = 1, MCMC.samplesize = 50000, 
+        MCMC.interval = 1000))
+
+Monte Carlo Maximum Likelihood Results:
+
+                 Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges            -9.77798    0.10591      0  -92.32   &lt;1e-04 ***
+gwesp.fixed.0.25  1.79703    0.04885      0   36.78   &lt;1e-04 ***
+nodematch.Grade   2.74577    0.08583      0   31.99   &lt;1e-04 ***
+nodematch.Race    0.91066    0.07363      0   12.37   &lt;1e-04 ***
+nodematch.Sex     0.76320    0.06284      0   12.15   &lt;1e-04 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+     Null Deviance: 1478525  on 1066530  degrees of freedom
+ Residual Deviance:   12134  on 1066525  degrees of freedom
+ 
+AIC: 12144  BIC: 12203  (Smaller is better. MC Std. Err. = 0.9025)</code></pre>
+</div>
+</div>
+<p>This one estimates. Now we have a fitted object, so we can look at the diagnostics that were unavailable before:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sample statistics summary:
+
+Iterations = 1250500:24998500
+Thinning interval = 6000 
+Number of chains = 1 
+Sample size per chain = 3959 
+
+1. Empirical mean and standard deviation for each variable,
+   plus standard error of the mean:
+
+                   Mean    SD Naive SE Time-series SE
+edges            16.929 48.30   0.7676          2.541
+gwesp.fixed.0.25  9.549 43.42   0.6901          2.097
+nodematch.Grade  16.285 46.34   0.7365          2.468
+nodematch.Race   15.074 44.46   0.7066          2.568
+nodematch.Sex    10.068 39.37   0.6258          2.133
+
+2. Quantiles for each variable:
+
+                   2.5%    25%    50%   75%  97.5%
+edges            -78.00 -15.00 17.000 48.00 113.00
+gwesp.fixed.0.25 -73.62 -19.99  8.484 38.14  97.08
+nodematch.Grade  -75.00 -15.00 16.000 45.00 110.05
+nodematch.Race   -71.00 -14.50 15.000 45.00 104.00
+nodematch.Sex    -67.00 -16.00 10.000 36.00  91.00
+
+
+Are sample statistics significantly different from observed?
+                  edges gwesp.fixed.0.25 nodematch.Grade nodematch.Race
+diff.      1.692852e+01     9.549270e+00    1.628467e+01   1.507350e+01
+test stat. 6.661946e+00     4.553390e+00    6.597000e+00   5.869797e+00
+P-val.     2.702247e-11     5.278838e-06    4.195594e-11   4.363289e-09
+           nodematch.Sex       (Omni)
+diff.       1.006795e+01           NA
+test stat.  4.719416e+00 2.055773e+02
+P-val.      2.365226e-06 1.395088e-39
+
+Sample statistics cross-correlations:
+                     edges gwesp.fixed.0.25 nodematch.Grade nodematch.Race
+edges            1.0000000        0.8594316       0.9628680      0.9486428
+gwesp.fixed.0.25 0.8594316        1.0000000       0.8791839      0.8522083
+nodematch.Grade  0.9628680        0.8791839       1.0000000      0.9211032
+nodematch.Race   0.9486428        0.8522083       0.9211032      1.0000000
+nodematch.Sex    0.9134315        0.8002890       0.8804427      0.8642738
+                 nodematch.Sex
+edges                0.9134315
+gwesp.fixed.0.25     0.8002890
+nodematch.Grade      0.8804427
+nodematch.Race       0.8642738
+nodematch.Sex        1.0000000
+
+Sample statistics auto-correlation:
+Chain 1 
+              edges gwesp.fixed.0.25 nodematch.Grade nodematch.Race
+Lag 0     1.0000000        1.0000000       1.0000000      1.0000000
+Lag 6000  0.7446390        0.6344405       0.7860461      0.7747297
+Lag 12000 0.5966849        0.5285399       0.6376071      0.6426781
+Lag 18000 0.4966781        0.4422302       0.5316683      0.5387406
+Lag 24000 0.4163834        0.3738939       0.4485239      0.4508404
+Lag 30000 0.3650173        0.3280059       0.3811319      0.3936941
+          nodematch.Sex
+Lag 0         1.0000000
+Lag 6000      0.7494750
+Lag 12000     0.6117679
+Lag 18000     0.5142387
+Lag 24000     0.4326071
+Lag 30000     0.3828866
+
+Sample statistics burn-in diagnostic (Geweke):
+Chain 1 
+
+Fraction in 1st window = 0.1
+Fraction in 2nd window = 0.5 
+
+           edges gwesp.fixed.0.25  nodematch.Grade   nodematch.Race 
+        1.370292         1.607435         1.474975         1.262674 
+   nodematch.Sex 
+        1.255958 
+
+Individual P-values (lower = worse):
+           edges gwesp.fixed.0.25  nodematch.Grade   nodematch.Race 
+       0.1705959        0.1079590        0.1402193        0.2067064 
+   nodematch.Sex 
+       0.2091310 
+Joint P-value (lower = worse):  0.1792526 
+
+Note: To save space, only one in every 12 iterations of the MCMC sample
+  used for estimation was stored for diagnostics. Sample size per chain
+  was originally around 47508 with thinning interval 500.
+
+Note: MCMC diagnostics shown here are from the last round of
+  simulation, prior to computation of final parameter estimates.
+  Because the final estimates are refinements of those used for this
+  simulation run, these diagnostics may understate model performance.
+  To directly assess the performance of the final model on in-model
+  statistics, please use the GOF command: gof(ergmFitObject,
+  GOF=~model).</code></pre>
+</div>
+</div>
+<p>Read the trace plots on the left first. Each shows the difference between the simulated and observed value of a statistic as the chain progresses. What you want is a stationary band with values bouncing around zero with no trend. The density plots on the right should be roughly symmetric and centered at zero, indicating that simulated networks resemble the observed one on each statistic.</p>
+<p>Compare these with the runaway chains we saw above. There the statistics moved quickly away from the observed values and never returned. Here they bounce around them randomly and are always centered on the true value.</p>
+<p>This model takes a few minutes to run. Depending on your network’s size and model complexity, some ERGM specifications run for hours or long. Starting a model before bed and hoping to find a converged one in the morning is a reasonable routine.</p>
+</section>
+<section id="a-point-to-remember" class="level3">
+<h3 class="anchored" data-anchor-id="a-point-to-remember">A point to remember</h3>
+<p>Notice what actually changed between the model that failed and the model that worked. Students form friendships with others in the same grade, of the same race, of the same sex, and those homophilous ties produce triangles as a byproduct. In our failed model, we asked the triangle term to explain all of that clustering on its own, and so it kept wanting to build more and more triangles and resulted in a degenerate model. Thus you need to think carefully about the processes at work in your network and use the ergm terms that capture those processes in your model.</p>
+<p>Degeneracy usually looks like a computational problem and usually is not one. It is the model telling you that your specification is wrong.</p>
+</section>
+</section>
+<section id="goodness-of-fit" class="level2">
+<h2 class="anchored" data-anchor-id="goodness-of-fit">Goodness of fit</h2>
+<p>Convergence is not fit. A model can converge cleanly and still fail to reproduce different features of the network. There are two questions worth asking, and they are different.</p>
+<p>First, does the model reproduce the statistics it was fit on?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gof</span>(mod6, <span class="at">GOF =</span> <span class="sc">~</span> model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Goodness-of-fit for model statistics 
+
+                            obs        min       mean        max MC p-value
+edges                 71.000000  55.000000  71.040000  81.000000       1.00
+mutual                19.000000  11.000000  19.000000  27.000000       1.00
+edgecov.par.friends   63.000000  50.000000  62.880000  72.000000       1.00
+nodeicov.COMP.1       33.348969   9.837132  32.936567  56.618595       0.98
+nodeocov.COMP.1       -5.223239 -20.183668  -5.643347   7.849532       0.98
+twopath              240.000000 131.000000 243.250000 328.000000       0.92
+gwesp.OTP.fixed.0.25  63.515073  36.884797  63.022949  81.199853       0.98</code></pre>
+</div>
+</div>
+<p>Second — and more demanding — does it reproduce features it was <em>not</em> fit on?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-13-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-13-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This gives the standard out-of-model comparisons: degree distribution, edgewise shared partners, geodesic distances. In each panel the observed network is the solid line and the simulated distribution is the boxplots. You want the observed line sitting inside the bulk of the simulated range. Where it strays outside, the model is missing something.</p>
+<p>You can also name your own statistic, like the triad census, and a model reproducing the full census is capturing local structure well:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6 <span class="sc">~</span> triadcensus))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A note on <code>mcmc.diagnostics</code>: since version 3.2 of the estimation algorithm, the diagnostic plots no longer confirm that mean simulated statistics match the observed ones. Use them to assess mixing and convergence, and use <code>gof(GOF = ~model)</code> for the statistics themselves.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/m-siciliano\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
