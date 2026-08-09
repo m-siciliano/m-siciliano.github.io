@@ -141,8 +141,11 @@ window.Quarto = {
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Fitting and Interpreting ERGMs, Part 2 – Michael D. Siciliano">
 <meta property="og:description" content="Dyadic dependent terms, why the triangle term breaks, and how to tell whether your model actually fits.">
-<meta property="og:image" content="https://m-siciliano.github.io/blogs/2026-08-09-ergm-interpretation_part2/data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://m-siciliano.github.io/blogs/2026-08-09-ergm-interpretation_part2/thumbnail.png">
 <meta property="og:site_name" content="Michael D. Siciliano">
+<meta property="og:image:height" content="960">
+<meta property="og:image:width" content="1344">
+<meta property="og:image:alt" content="mcmc diagnostic plot">
 </head>
 
 <body class="floating nav-fixed quarto-light">
@@ -327,28 +330,12 @@ window.Quarto = {
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.9140.
+The log-likelihood improved by 0.9696.
 Estimating equations are not within tolerance region.
 Iteration 2 of at most 60:
 1 Optimizing with step length 1.0000.
 The log-likelihood improved by 0.0369.
-Convergence test p-value: 0.1614. Not converged with 99% confidence; increasing sample size.
-Iteration 3 of at most 60:
-1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0355.
-Convergence test p-value: 0.2194. Not converged with 99% confidence; increasing sample size.
-Iteration 4 of at most 60:
-1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0531.
-Convergence test p-value: 0.0377. Not converged with 99% confidence; increasing sample size.
-Iteration 5 of at most 60:
-1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0292.
-Convergence test p-value: 0.0360. Not converged with 99% confidence; increasing sample size.
-Iteration 6 of at most 60:
-1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0299.
-Convergence test p-value: 0.0004. Converged with 99% confidence.
+Convergence test p-value: 0.0009. Converged with 99% confidence.
 Finished MCMLE.
 Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
 Bridging between the dyad-independent submodel and the full model...
@@ -369,20 +356,20 @@ ergm(formula = par5 ~ edges + mutual + edgecov(par.friends) +
 Monte Carlo Maximum Likelihood Results:
 
                      Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges                -2.28111    0.80773      0  -2.824 0.004741 ** 
-mutual                2.17861    0.52665      0   4.137  &lt; 1e-04 ***
-edgecov.par.friends   2.23413    0.39185      0   5.702  &lt; 1e-04 ***
-nodeicov.COMP.1      -0.06234    0.16461      0  -0.379 0.704897    
-nodeocov.COMP.1      -0.53540    0.16238      0  -3.297 0.000976 ***
-twopath              -0.26676    0.09332      0  -2.859 0.004254 ** 
-gwesp.OTP.fixed.0.25  0.66541    0.25206      0   2.640 0.008293 ** 
+edges                -2.21155    0.73946      0  -2.991 0.002783 ** 
+mutual                2.15401    0.55259      0   3.898  &lt; 1e-04 ***
+edgecov.par.friends   2.22535    0.38540      0   5.774  &lt; 1e-04 ***
+nodeicov.COMP.1      -0.07219    0.16128      0  -0.448 0.654427    
+nodeocov.COMP.1      -0.53608    0.15871      0  -3.378 0.000731 ***
+twopath              -0.26519    0.09154      0  -2.897 0.003768 ** 
+gwesp.OTP.fixed.0.25  0.62927    0.27041      0   2.327 0.019961 *  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
      Null Deviance: 424.2  on 306  degrees of freedom
- Residual Deviance: 214.8  on 299  degrees of freedom
+ Residual Deviance: 214.6  on 299  degrees of freedom
  
-AIC: 228.8  BIC: 254.9  (Smaller is better. MC Std. Err. = 0.6018)</code></pre>
+AIC: 228.6  BIC: 254.7  (Smaller is better. MC Std. Err. = 0.3494)</code></pre>
 </div>
 </div>
 <p>The decay parameter — <code>0.25</code> here — controls how quickly additional shared partners are discounted. Setting <code>fixed = TRUE</code> treats it as known rather than estimating it, which is the common practice though you can also allow for it to be estimated as well. For more information see <a href="https://www.jstor.org/stable/27594198">Hunter and Handcock (2006)</a> as well as <a href="https://www.sciencedirect.com/science/article/abs/pii/S0378873306000396?via%3Dihub">Hunter (2007)</a></p>
@@ -422,63 +409,75 @@ AIC: 228.8  BIC: 254.9  (Smaller is better. MC Std. Err. = 0.6018)</code></pre>
 <pre><code>Iteration 1 of at most 60:</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>1 Optimizing with step length 0.3641.
-The log-likelihood improved by 2.5104.
+<pre><code>1 Optimizing with step length 0.3767.
+The log-likelihood improved by 3.1479.
 Estimating equations are not within tolerance region.
 Iteration 2 of at most 60:
-1 Optimizing with step length 0.6840.
-The log-likelihood improved by 2.0824.
+1 Optimizing with step length 0.6711.
+The log-likelihood improved by 2.0655.
 Estimating equations are not within tolerance region.
 Iteration 3 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 1.5325.
+The log-likelihood improved by 0.7952.
 Estimating equations are not within tolerance region.
 Iteration 4 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.2134.
+The log-likelihood improved by 0.2328.
 Estimating equations are not within tolerance region.
 Iteration 5 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.1194.
+The log-likelihood improved by 0.1748.
 Estimating equations are not within tolerance region.
 Iteration 6 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.1692.
+The log-likelihood improved by 0.3478.
 Estimating equations are not within tolerance region.
 Iteration 7 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.2524.
+The log-likelihood improved by 0.1504.
 Estimating equations are not within tolerance region.
-Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
 Iteration 8 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0920.
-Convergence test p-value: 0.8470. Not converged with 99% confidence; increasing sample size.
+The log-likelihood improved by 0.5221.
+Estimating equations are not within tolerance region.
+Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
 Iteration 9 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.1589.
+The log-likelihood improved by 0.5590.
 Estimating equations are not within tolerance region.
 Iteration 10 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.1528.
+The log-likelihood improved by 0.2613.
 Estimating equations are not within tolerance region.
 Iteration 11 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.1780.
+The log-likelihood improved by 0.1627.
 Estimating equations are not within tolerance region.
-Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
 Iteration 12 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0628.
-Convergence test p-value: 0.0969. Not converged with 99% confidence; increasing sample size.
+The log-likelihood improved by 0.2423.
+Estimating equations are not within tolerance region.
 Iteration 13 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0251.
-Convergence test p-value: 0.2364. Not converged with 99% confidence; increasing sample size.
+The log-likelihood improved by 0.2959.
+Estimating equations are not within tolerance region.
+Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
 Iteration 14 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0070.
-Convergence test p-value: 0.0001. Converged with 99% confidence.
+The log-likelihood improved by 0.2007.
+Estimating equations are not within tolerance region.
+Iteration 15 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0599.
+Convergence test p-value: 0.9651. Not converged with 99% confidence; increasing sample size.
+Iteration 16 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0683.
+Convergence test p-value: 0.5471. Not converged with 99% confidence; increasing sample size.
+Iteration 17 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.0390.
+Convergence test p-value: 0.0041. Converged with 99% confidence.
 Finished MCMLE.
 Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
 Bridging between the dyad-independent submodel and the full model...
@@ -503,31 +502,31 @@ ergm(formula = par5 ~ edges + mutual + twopath + gwesp(0.693,
 Monte Carlo Maximum Likelihood Results:
 
                       Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges                 -0.20947    1.27478      0  -0.164 0.869479    
-mutual                 2.40825    0.68821      0   3.499 0.000466 ***
-twopath               -0.41664    0.16968      0  -2.455 0.014074 *  
-gwesp.OTP.fixed.0.693  0.50031    0.22925      0   2.182 0.029081 *  
-gwdsp.OTP.fixed.0.693 -0.12094    0.18832      0  -0.642 0.520754    
-edgecov.par.friends    2.33165    0.44721      0   5.214  &lt; 1e-04 ***
-gwideg.fixed.0.693     2.13625    1.88636      0   1.132 0.257436    
-gwodeg.fixed.0.693    -0.64802    1.12246      0  -0.577 0.563720    
-nodematch.GRADE        0.84633    0.38528      0   2.197 0.028045 *  
-absdiff.YRSDIST       -0.01284    0.01689      0  -0.760 0.447064    
-nodeicov.YRSDIST      -0.01968    0.02174      0  -0.906 0.365145    
-nodeocov.YRSDIST       0.01662    0.01964      0   0.846 0.397406    
-nodeifactor.EDUC.2     0.06160    0.43571      0   0.141 0.887571    
-nodeofactor.EDUC.2    -0.01362    0.36584      0  -0.037 0.970306    
-nodeicov.EFFIC        -0.77221    0.30515      0  -2.531 0.011386 *  
-nodeocov.EFFIC        -0.67607    0.28516      0  -2.371 0.017747 *  
-nodeicov.COMP.1       -0.63719    0.30239      0  -2.107 0.035101 *  
-nodeocov.COMP.1       -0.61176    0.26433      0  -2.314 0.020649 *  
+edges                 -0.22632    1.25342      0  -0.181 0.856711    
+mutual                 2.37994    0.68570      0   3.471 0.000519 ***
+twopath               -0.40876    0.17110      0  -2.389 0.016895 *  
+gwesp.OTP.fixed.0.693  0.47280    0.22844      0   2.070 0.038486 *  
+gwdsp.OTP.fixed.0.693 -0.12137    0.19426      0  -0.625 0.532109    
+edgecov.par.friends    2.32764    0.46312      0   5.026  &lt; 1e-04 ***
+gwideg.fixed.0.693     2.14051    1.91294      0   1.119 0.263155    
+gwodeg.fixed.0.693    -0.69803    1.13211      0  -0.617 0.537516    
+nodematch.GRADE        0.85749    0.38576      0   2.223 0.026226 *  
+absdiff.YRSDIST       -0.01369    0.01685      0  -0.813 0.416431    
+nodeicov.YRSDIST      -0.01830    0.02243      0  -0.816 0.414712    
+nodeocov.YRSDIST       0.01750    0.01970      0   0.888 0.374304    
+nodeifactor.EDUC.2     0.06825    0.43864      0   0.156 0.876344    
+nodeofactor.EDUC.2    -0.03369    0.37978      0  -0.089 0.929306    
+nodeicov.EFFIC        -0.75792    0.30553      0  -2.481 0.013115 *  
+nodeocov.EFFIC        -0.67199    0.29605      0  -2.270 0.023216 *  
+nodeicov.COMP.1       -0.63400    0.29520      0  -2.148 0.031739 *  
+nodeocov.COMP.1       -0.60327    0.25607      0  -2.356 0.018479 *  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
      Null Deviance: 424.2  on 306  degrees of freedom
- Residual Deviance: 184.2  on 288  degrees of freedom
+ Residual Deviance: 183.7  on 288  degrees of freedom
  
-AIC: 220.2  BIC: 287.2  (Smaller is better. MC Std. Err. = 0.3594)</code></pre>
+AIC: 219.7  BIC: 286.7  (Smaller is better. MC Std. Err. = 0.4675)</code></pre>
 </div>
 </div>
 <p>The <code>gwidegree</code> and <code>gwodegree</code> terms deserve a word of caution, because their signs read backwards from what people expect. A negative coefficient indicates <em>centralization</em> — degree concentrated among fewer actors — rather than the opposite. Reading these the wrong way is a common error. Here is a great explainer by <a href="https://figshare.com/articles/poster/Interpretation_of_GW-Degree_Estimates_in_ERGMs/3465020?file=5454032">Levy and colleagues</a> along with a link to an awesome shiny app to see this in action.</p>
@@ -589,30 +588,33 @@ AIC: 220.2  BIC: 287.2  (Smaller is better. MC Std. Err. = 0.3594)</code></pre>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">nsim =</span> <span class="dv">500</span>,</span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">output =</span> <span class="st">"stats"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■                   48% |  ETA:  3s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■                    43% |  ETA:  3s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■              63% |  ETA:  3s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■               61% |  ETA:  3s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■           74% |  ETA:  3s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■           72% |  ETA:  3s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■        83% |  ETA:  3s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■         81% |  ETA:  3s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      90% |  ETA:  2s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■       87% |  ETA:  2s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    96% |  ETA:  1s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     93% |  ETA:  1s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   99% |  ETA:  0s</code></pre>
 </div>
 </div>
 <p>Each row is one network drawn from the model. Plotting the edge count across the chain, with the observed value marked in red:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"edges"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Edges"</span>,</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Edge count across simulated networks"</span>)</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> edges), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"edges"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Edges"</span>,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Edge count across simulated networks"</span>)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> edges), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -623,10 +625,10 @@ AIC: 220.2  BIC: 287.2  (Smaller is better. MC Std. Err. = 0.3594)</code></pre>
 </div>
 <p>And the triangle count:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"triangle"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Triangles"</span>,</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Triangle count across simulated networks"</span>)</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> triangle), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"triangle"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Triangles"</span>,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Triangle count across simulated networks"</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> triangle), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -638,12 +640,12 @@ AIC: 220.2  BIC: 287.2  (Smaller is better. MC Std. Err. = 0.3594)</code></pre>
 <p>This is degeneracy made visible. The chain does not settle anywhere near the observed network. Here the red line is the observed number of edges and triangles. In both plots, the simulated network statistics for edges and triangles climbs, and keeps climbing, toward networks far denser than anything in the data. A model whose simulated networks look like this cannot possibly be fit to the observed one, because there is no region of the parameter space where the observed network sits near the middle of the model’s own distribution.</p>
 <p>Compare the magnitudes directly:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> triangle)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> triangle)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   edges triangle 
      974      169 </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(sim.chain)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(sim.chain)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    edges  triangle 
  109728.5 1311768.2 </code></pre>
@@ -660,11 +662,11 @@ AIC: 220.2  BIC: 287.2  (Smaller is better. MC Std. Err. = 0.3594)</code></pre>
 <p>The fix is not a better optimizer or a longer chain. It is a better specification.</p>
 <p>Two changes we can make to our specification. First, replace <code>triangle</code> with <code>gwesp</code>, whose geometric discounting means each additional shared partner contributes less than the one before. This is precisely the dampening the raw triangle count lacks. Second, give the model attribute terms that account for clustering the structural term was otherwise being asked to absorb on its own.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">gwesp</span>(<span class="fl">0.25</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">nodematch</span>(<span class="st">"Grade"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Race"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Sex"</span>),</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">control =</span> <span class="fu">control.ergm</span>(<span class="at">seed =</span> <span class="dv">1</span>,</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.samplesize =</span> <span class="dv">50000</span>,</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.interval =</span> <span class="dv">1000</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">gwesp</span>(<span class="fl">0.25</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">nodematch</span>(<span class="st">"Grade"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Race"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Sex"</span>),</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">control =</span> <span class="fu">control.ergm</span>(<span class="at">seed =</span> <span class="dv">1</span>,</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.samplesize =</span> <span class="dv">50000</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.interval =</span> <span class="dv">1000</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
 </div>
@@ -687,45 +689,56 @@ AIC: 220.2  BIC: 287.2  (Smaller is better. MC Std. Err. = 0.3594)</code></pre>
 <pre><code>Iteration 1 of at most 60:</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■                              11% |  ETA: 28s</code></pre>
+<pre><code>Sampling ■■                                 3% |  ETA:  1m</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■                           21% |  ETA: 25s</code></pre>
+<pre><code>Sampling ■■■■                               9% |  ETA: 44s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■                       32% |  ETA: 20s</code></pre>
+<pre><code>Sampling ■■■■■■                            17% |  ETA: 37s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■                     42% |  ETA: 18s</code></pre>
+<pre><code>Sampling ■■■■■■■■■                         28% |  ETA: 27s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■                  51% |  ETA: 15s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■                      36% |  ETA: 24s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■               60% |  ETA: 12s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■                    43% |  ETA: 22s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■            69% |  ETA: 10s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■                  49% |  ETA: 20s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■         79% |  ETA:  7s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■                56% |  ETA: 18s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■       87% |  ETA:  4s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■              63% |  ETA: 15s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    96% |  ETA:  1s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■            69% |  ETA: 13s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■          75% |  ETA: 10s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■        83% |  ETA:  7s</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      91% |  ETA:  4s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>1 Optimizing with step length 0.9550.
 The log-likelihood improved by 6.5439.
 Estimating equations are not within tolerance region.
 Iteration 2 of at most 60:
-Sampling ■■■■■■                            18% |  ETA: 15s
-Sampling ■■■■■■■■■■■■                      36% |  ETA: 11s
-Sampling ■■■■■■■■■■■■■■■■■                 52% |  ETA:  9s
-Sampling ■■■■■■■■■■■■■■■■■■■■■■            69% |  ETA:  6s
-Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■       86% |  ETA:  2s
+Sampling ■■■                                7% |  ETA: 18s
+Sampling ■■■■■■■■                          23% |  ETA: 15s
+Sampling ■■■■■■■■■■■■                      38% |  ETA: 12s
+Sampling ■■■■■■■■■■■■■■■■■                 53% |  ETA:  9s
+Sampling ■■■■■■■■■■■■■■■■■■■■■             68% |  ETA:  6s
+Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■        84% |  ETA:  3s
+Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    98% |  ETA:  0s
 1 Optimizing with step length 1.0000.
 The log-likelihood improved by 0.0914.
 Convergence test p-value: &lt; 0.0001. Converged with 99% confidence.
@@ -739,7 +752,7 @@ Bridging finished.
 This model was fit using MCMC.  To examine model diagnostics and check
 for degeneracy, use the mcmc.diagnostics() function.</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 ergm(formula = magnolia ~ edges + gwesp(0.25, fixed = TRUE) + 
@@ -766,7 +779,7 @@ AIC: 12144  BIC: 12203  (Smaller is better. MC Std. Err. = 0.9025)</code></pre>
 </div>
 <p>This one estimates. Now we have a fitted object, so we can look at the diagnostics that were unavailable before:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -896,24 +909,24 @@ Note: MCMC diagnostics shown here are from the last round of
 <p>Convergence is not fit. A model can converge cleanly and still fail to reproduce different features of the network. There are two questions worth asking, and they are different.</p>
 <p>First, does the model reproduce the statistics it was fit on?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gof</span>(mod6, <span class="at">GOF =</span> <span class="sc">~</span> model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gof</span>(mod6, <span class="at">GOF =</span> <span class="sc">~</span> model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Goodness-of-fit for model statistics 
 
-                            obs       min       mean       max MC p-value
-edges                 71.000000  58.00000  70.640000  85.00000       0.96
-mutual                19.000000  10.00000  18.770000  31.00000       0.98
-edgecov.par.friends   63.000000  51.00000  62.590000  75.00000       0.96
-nodeicov.COMP.1       33.348969  11.27755  33.537674  55.34909       0.90
-nodeocov.COMP.1       -5.223239 -24.96035  -5.155309  11.27713       0.92
-twopath              240.000000 154.00000 235.990000 371.00000       0.88
-gwesp.OTP.fixed.0.25  63.515073  46.02238  62.711828  87.78252       0.84</code></pre>
+                            obs       min      mean       max MC p-value
+edges                 71.000000  57.00000  70.14000  85.00000       0.84
+mutual                19.000000  12.00000  18.94000  27.00000       1.00
+edgecov.par.friends   63.000000  48.00000  62.07000  78.00000       0.96
+nodeicov.COMP.1       33.348969  13.40890  32.64541  54.25384       0.90
+nodeocov.COMP.1       -5.223239 -21.55766  -4.63717  15.96282       1.00
+twopath              240.000000 155.00000 234.27000 336.00000       0.86
+gwesp.OTP.fixed.0.25  63.515073  37.10600  60.65358  86.95803       0.64</code></pre>
 </div>
 </div>
 <p>Second — and more demanding — does it reproduce features it was <em>not</em> fit on?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -953,7 +966,7 @@ gwesp.OTP.fixed.0.25  63.515073  46.02238  62.711828  87.78252       0.84</code>
 <p>This gives the standard out-of-model comparisons: degree distribution, edgewise shared partners, geodesic distances. In each panel the observed network is the solid line and the simulated distribution is the boxplots. You want the observed line sitting inside the bulk of the simulated range. Where it strays outside, the model is missing something.</p>
 <p>You can also name your own statistic, like the triad census, and a model reproducing the full census is capturing local structure well:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6 <span class="sc">~</span> triadcensus))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6 <span class="sc">~</span> triadcensus))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
