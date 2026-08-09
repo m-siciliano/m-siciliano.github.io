@@ -7,3 +7,5 @@
 .js
 /_site/
 /.quarto/
+**/*.quarto_ipynb
+site_libs/
