@@ -22,15 +22,25 @@ website:
       - teaching.qmd
       - cv.qmd
       - blogs.qmd
-
+    right:
+      - icon: envelope
+        href: mailto:sicilian@uic.edu
+        aria-label: Email
+      - icon: mortarboard-fill
+        href: https://scholar.google.com/citations?user=Pq3gu_MAAAAJ
+        aria-label: Google Scholar
+      - icon: github
+        href: https://github.com/m-siciliano
+        aria-label: GitHub
 
 format:
   html:
     theme: cosmo
     css: styles.css
     toc: true
+    toc-location: left
     include-in-header: 
       - text: <meta name="google-site-verification" content="wmk6bxER3-ttJtcJTQ5ET0wgPTw3tdtN-3O_AGnTTVA" />
 
-editor: visual
+editor: source
 
