@@ -3,7 +3,6 @@ title: "Research"
 description: "I study how people and organizations collaborate to address public problems that cross political and functional boundaries."
 pagetitle: "Research — Interorganizational Networks and Collaborative Governance"
 toc: true
-toc-location: left
 toc-title: "On this page"
 editor: source
 ---
