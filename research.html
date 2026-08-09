@@ -73,6 +73,9 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Research and Publications – Michael D. Siciliano">
+<meta property="og:description" content="My research engages topics in public policy, public management, network science, and collaborative governance.">
+<meta property="og:site_name" content="Michael D. Siciliano">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -287,7 +290,7 @@ ul.task-list li input[type="checkbox"] {
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/m-siciliano\.github\.io\/");
+        var filterRegex = new RegExp("https:\/\/m-siciliano\.github\.io");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
