@@ -1,0 +1,262 @@
+---
+title: "Fitting and Interpreting ERGMs, Part 1"
+description: "Starting from a null model and building up through dyadic independent terms — what each coefficient actually tells you."
+date: 2026-08-09
+categories: [ergm, sna, r]
+---
+
+In an [earlier post](../2025-05-27-ergm-intuition/index.qmd) I worked through
+where ERGM parameter values come from. This post picks up the practical side:
+how to fit a model to real network data and how to read the coefficients once
+you have them.
+
+The data are advice ties among 47 teachers in an elementary school, along with
+a second network of friendship ties among the same teachers. Both are
+deidentified. The advice network comes from work on how internal competition
+shapes advice seeking in schools. This data are for one of the schools associated with this Public Administration Review piece: https://onlinelibrary.wiley.com/doi/abs/10.1111/puar.12362
+
+```{r}
+#| warning: false
+#| message: false
+
+library(statnet)
+library(texreg)
+
+load("par5.RData")
+par5
+```
+
+## Starting with a null model
+
+The simplest possible ERGM says that every tie forms independently, with some
+constant probability. In ERGM syntax that is a model with nothing but an
+`edges` term.
+
+```{r}
+mod1 <- ergm(par5 ~ edges)
+summary(mod1)
+```
+
+The edges coefficient is about $-1.20$. That number is a log-odds, so to get
+the probability of a tie we run it back through the inverse logit:
+
+```{r}
+exp(-1.1969) / (1 + exp(-1.1969))
+```
+
+Roughly $0.23$. This value is exactly the density of the network:
+
+```{r}
+gden(par5)
+```
+
+This is worth sitting with for a moment. In a model where the only thing
+governing tie formation is a constant probability, the fitted probability *has*
+to be the observed density — there is nothing else in the model to explain
+anything. We can confirm the arithmetic directly:
+
+```{r}
+network.dyadcount(par5)   # 47 * 46 possible directed ties
+network.edgecount(par5)   # observed ties
+network.edgecount(par5) / network.dyadcount(par5)
+```
+
+So the null model recovers the density and nothing more. The question is
+whether density alone is a good description of this network.
+
+## Simulating from the model
+
+One of the genuinely useful things about ERGMs is that a fitted model is a
+probability distribution over networks. We can draw from it and compare what
+the model produces against what we actually observed.
+
+```{r}
+sims <- simulate(mod1, nsim = 1)
+plot(sims)
+```
+
+Now compare a handful of statistics between the simulated network and the real
+one:
+
+```{r}
+summary(sims ~ edges + mutual + triangle + twopath)
+summary(par5 ~ edges + mutual + triangle + twopath)
+```
+
+The edge counts line up well, which is what we expected — the model was built
+to match density. But the observed network has considerably more reciprocated
+ties and more triangles than the model produces. Teachers tend to ask *each other* for help, and advice ties cluster into triads. A
+model assuming independence between ties has no way to represent either
+pattern.
+
+That gap is the whole motivation for everything that follows. We want a model
+whose simulated networks look like the one we observed, not just in density but
+in the structural features we care about.
+
+## What the statistics actually count
+
+Before adding terms, it helps to see what these network statistics are counting.
+The counts are hard to eyeball even in a network of 47 nodes, so here is a toy
+undirected network of 7:
+
+```{r}
+newmat <- rbind(c(0,1,1,1,0,0,0),
+                c(1,0,1,1,0,0,0),
+                c(1,1,0,1,0,0,0),
+                c(1,1,1,0,1,0,0),
+                c(0,0,0,1,0,1,1),
+                c(0,0,0,0,1,0,1),
+                c(0,0,0,0,1,1,0))
+newmat <- network(newmat, directed = FALSE)
+plot(newmat, displaylabels = TRUE)
+summary(newmat ~ edges + triangle + twopath)
+```
+
+And the directed case, where the same three nodes can contribute several
+triangles depending on tie direction:
+
+```{r}
+newmat2 <- rbind(c(0,1,1,0,0,0,0),
+                 c(1,0,1,0,0,0,1),
+                 c(1,1,0,1,0,1,0),
+                 c(0,0,1,0,0,0,0),
+                 c(0,0,0,1,0,0,1),
+                 c(0,0,0,0,1,0,1),
+                 c(0,0,0,0,1,0,0))
+newmat2 <- network(newmat2, directed = TRUE)
+plot(newmat2, displaylabels = TRUE)
+summary(newmat2 ~ edges + triangle + twopath)
+```
+
+Notice that twopaths are nested inside triangles: every triangle contains
+twopaths, so the two terms are counting overlapping features of the same edges.
+That collinearity is not a nuisance detail — it is a large part of why these
+models can be difficult to fit. The estimation has to separate signal among
+terms that are structurally entangled with one another.
+
+## Dyadic independent terms
+
+Terms are called *dyadic independent* when the value of one tie does not depend
+on any other tie. These behave much like predictors in a logistic regression,
+and the interpretation carries over directly.
+
+### Categorical attributes
+
+Teachers in these data either teach a single grade or multiple grades. We can
+ask whether that affects the ties they send and receive:
+
+```{r}
+mod2a <- ergm(par5 ~ edges + nodeifactor("GRADE", levels = 8) +
+                nodeofactor("GRADE", levels = 8))
+summary(mod2a)
+```
+
+The coefficient on outgoing ties is about $0.51$. As a log-odds this is not
+very interpretable, so exponentiate it:
+
+```{r}
+exp(mod2a$coef[3])
+```
+
+About $1.6$. Holding everything else constant, the odds of sending an advice tie
+increase by a factor of roughly 1.6 when the sender teaches multiple grades
+rather than one.
+
+It's worth verifying that this is really what the coefficient means. The odds
+that a single-grade teacher sends a tie to another single-grade teacher:
+
+```{r}
+a <- exp(-1.56)
+a
+```
+
+And for a multiple-grade sender:
+
+```{r}
+b <- exp(-1.56 + 0.5085)
+b
+b / a
+```
+
+Same $1.66$. Converting to probabilities instead:
+
+```{r}
+exp(-1.56) / (1 + exp(-1.56))
+exp(-1.56 + 0.5085) / (1 + exp(-1.56 + 0.5085))
+```
+
+Slightly below and slightly above the overall density, respectively.
+
+### Homophily
+
+A separate question is whether teachers seek advice from others *like*
+themselves. `nodematch` tests exactly that:
+
+```{r}
+mod2b <- ergm(par5 ~ edges + nodematch("GRADE", diff = FALSE))
+summary(mod2b)
+exp(mod2b$coef[2])
+```
+
+The odds of a tie between two teachers of the same grade are roughly 2.2 times
+the odds of a tie between teachers of different grades. Setting `diff = TRUE`
+would estimate a separate homophily parameter for each grade, which is worth
+doing when you suspect the tendency varies across categories.
+
+### Continuous attributes
+
+Continuous attributes work the same way, with `nodeicov` and `nodeocov` for
+receiving and sending effects. Here the attribute is a teacher's perception of
+how competitive their school is internally:
+
+```{r}
+mod3 <- ergm(par5 ~ edges + nodeicov("COMP.1") + nodeocov("COMP.1"))
+summary(mod3)
+```
+
+For homophily on a continuous attribute, `absdiff` uses the absolute difference
+between sender and receiver — here, years served in the district:
+
+```{r}
+mod4 <- ergm(par5 ~ edges + absdiff("YRSDIST"))
+summary(mod4)
+exp(mod4$coef[2])
+```
+
+About $0.98$, so each additional year of difference in tenure reduces the odds
+of a tie by roughly 2%. Small per year, but it compounds across the range: a
+twenty-year gap is a substantial penalty.
+
+### Another network as a predictor
+
+One of the most useful terms in practice is `edgecov`, which uses a second
+network as a dyadic predictor. Here we ask whether friendship predicts advice
+seeking.
+
+```{r}
+load("par.friends.RData")
+
+# confirm the two networks are ordered identically
+all(row.names(as.sociomatrix(par.friends)) == row.names(as.sociomatrix(par5)))
+
+mod5 <- ergm(par5 ~ edges + edgecov(par.friends))
+summary(mod5)
+exp(mod5$coef[2])
+```
+
+Advice ties are roughly 15 times more likely between teachers who are also
+friends. That row-name check above matters more than it looks — if the two
+networks are ordered differently, `edgecov` will silently compare the wrong
+dyads and hand you a plausible, wrong answer.
+
+## Where this leaves us
+
+Everything so far assumes ties are independent of one another given the
+covariates. That assumption is what makes these models straightforward to fit
+and interpret — and it is also what the earlier simulation showed to be wrong.
+The excess reciprocity and clustering in the observed network are precisely the
+patterns dyadic independent terms cannot capture.
+
+The next post takes up the dyadic dependent and the geometrically weighted statistics along with the model
+degeneracy that makes them tricky, and how to check whether a fitted model
+actually reproduces the network you started with.
