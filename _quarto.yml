@@ -11,6 +11,9 @@ project:
 
 website:
   title: "Michael D. Siciliano"
+  site-url: "https://m-siciliano.github.io"
+  description: "Michael D. Siciliano — Professor of Public Administration at the University of Illinois Chicago. Research on interorganizational networks, collaborative governance, and social network analysis."
+  open-graph: true
   navbar:
     left:
       - href: index.qmd

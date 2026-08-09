@@ -1,5 +1,5 @@
 ---
-title: "About"
+title: "Networks and Collaborative Governance"
 pagetitle: "Michael D. Siciliano | Networks and Collaborative Governance, UIC"
 description: "Professor in the Department of Public Policy, Management, and Analytics at UIC and co-director of the Networks and Governance Lab."
 ---
