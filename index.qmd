@@ -1,8 +1,10 @@
 ---
 title: "About"
+pagetitle: "Michael D. Siciliano | Networks and Collaborative Governance, UIC"
+description: "Professor in the Department of Public Policy, Management, and Analytics at UIC and co-director of the Networks and Governance Lab."
 ---
 
-::: columns
+:::::: columns
 ::: {.column width="30%"}
 ![](images/M.Siciliano_Photo.jpg)
 
@@ -19,4 +21,4 @@ I currently teach classes on network analysis, data analysis, collaborative gove
 
 My masters degree is in Public Policy and Management from the Heinz School at [Carnegie Mellon University](https://www.heinz.cmu.edu/). I received my PhD in Public Policy and Administration from the Graduate School of Public and International Affairs at the [University of Pittsburgh](https://www.gspia.pitt.edu/).
 :::
-:::
+::::::

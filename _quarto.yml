@@ -26,6 +26,8 @@ format:
     theme: cosmo
     css: styles.css
     toc: true
+    include-in-header: 
+      - text: <meta name="google-site-verification" content="wmk6bxER3-ttJtcJTQ5ET0wgPTw3tdtN-3O_AGnTTVA" />
 
 editor: visual
 
