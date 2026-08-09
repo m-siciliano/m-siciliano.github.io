@@ -1,6 +1,44 @@
 ---
 title: "CV"
-editor: visual
+description: "Curriculum vitae for Michael D. Siciliano, Professor of Public Policy, Management, and Analytics at the University of Illinois Chicago."
+editor: source
 ---
 
-Click [**here**](files/Michael_D_Siciliano_CV_June_2022.pdf) for my current (or perhaps somewhat current) CV.
+[Download CV (PDF)](files/Michael_D_Siciliano_CV.pdf){.btn .btn-primary}
+
+*Updated August 2026*
+
+## At a Glance
+
+**Current Positions**
+
+- Professor, Department of Public Policy, Management, and Analytics, University
+  of Illinois Chicago (2025–present)
+- Director of Graduate Studies, PhD Program in Public Administration
+  (2026–present)
+- Co-Director, [Networks and Governance Lab](https://cuppa.uic.edu/academics/pa/net-gov-lab/)
+  (2019–present)
+- Associate Editor, *Journal of Public Administration Research and Theory*
+  (2019–present)
+
+**Education**
+
+- Ph.D., Public Policy and Administration, University of Pittsburgh, Graduate
+  School of Public and International Affairs, 2012
+- M.S., Public Policy and Management, Carnegie Mellon University, Heinz School,
+  2006
+- B.S., Logistics and Business Administration, Penn State University, Smeal
+  College of Business, 2002
+
+**Selected Awards**
+
+- UIC Teaching Recognition Award (2016, 2021)
+- UIC Silver Circle Teaching Award (2018)
+- Honoring Our Professors' Excellence (HOPE) Award (2017)
+- Dean's Committee Dissertation Award, University of Pittsburgh (2010)
+
+## Elsewhere
+
+[Google Scholar](https://scholar.google.com/citations?user=Pq3gu_MAAAAJ) ·
+[ORCID](https://orcid.org/0000-0001-8688-8685) ·
+[Research and publications](research.qmd)
