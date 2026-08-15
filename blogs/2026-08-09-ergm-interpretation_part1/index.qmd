@@ -12,7 +12,7 @@ where ERGM parameter values come from. This post picks up the practical side:
 how to fit a model to real network data and how to read the coefficients once
 you have them.
 
-The data are advice ties among 47 teachers in an elementary school, along with
+The data are advice ties among 18 teachers in an elementary school, along with
 a second network of friendship ties among the same teachers. Both are
 deidentified. The advice network comes from work on how internal competition
 shapes advice seeking in schools. This data are for one of the schools associated with this Public Administration Review piece: https://onlinelibrary.wiley.com/doi/abs/10.1111/puar.12362
@@ -58,7 +58,7 @@ to be the observed density — there is nothing else in the model to explain
 anything. We can confirm the arithmetic directly:
 
 ```{r}
-network.dyadcount(par5)   # 47 * 46 possible directed ties
+network.dyadcount(par5)   # 18 * 17 possible directed ties
 network.edgecount(par5)   # observed ties
 network.edgecount(par5) / network.dyadcount(par5)
 ```
@@ -98,8 +98,8 @@ in the structural features we care about.
 ## What the statistics actually count
 
 Before adding terms, it helps to see what these network statistics are counting.
-The counts are hard to eyeball even in a network of 47 nodes, so here is a toy
-undirected network of 7:
+The counts are hard to eyeball even in a small network of 18 nodes, so let's simulate an even smaller
+undirected network of 7 nodes:
 
 ```{r}
 newmat <- rbind(c(0,1,1,1,0,0,0),
