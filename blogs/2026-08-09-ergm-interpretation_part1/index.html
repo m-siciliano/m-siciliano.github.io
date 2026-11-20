@@ -322,7 +322,7 @@ No edge attributes</code></pre>
 </div>
 <section id="starting-with-a-null-model" class="level2">
 <h2 class="anchored" data-anchor-id="starting-with-a-null-model">Starting with a null model</h2>
-<p>The simplest possible ERGM says that every tie forms independently, with some constant probability. In ERGM syntax that is a model with nothing but an <code>edges</code> term.</p>
+<p>The simplest possible ERGM says that every tie forms independently, with some constant probability. In ERGM syntax that is a model with nothing but an <code>edges</code> term. This is equivalnt to an intercept only regression model.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(par5 <span class="sc">~</span> edges)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
@@ -375,7 +375,7 @@ AIC: 333.5  BIC: 337.3  (Smaller is better. MC Std. Err. = 0)</code></pre>
 <pre><code>[1] 0.2320261</code></pre>
 </div>
 </div>
-<p>This is worth sitting with for a moment. In a model where the only thing governing tie formation is a constant probability, the fitted probability <em>has</em> to be the observed density — there is nothing else in the model to explain anything. We can confirm the arithmetic directly:</p>
+<p>Take a second to think about this. In a model where the only thing governing tie formation is a constant probability, the fitted probability <em>has</em> to be the observed density as there is nothing else in the model to explain anything. We can confirm the arithmetic directly:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">network.dyadcount</span>(par5)   <span class="co"># 18 * 17 possible directed ties</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -390,11 +390,11 @@ AIC: 333.5  BIC: 337.3  (Smaller is better. MC Std. Err. = 0)</code></pre>
 <pre><code>[1] 0.2320261</code></pre>
 </div>
 </div>
-<p>So the null model recovers the density and nothing more. The question is whether density alone is a good description of this network.</p>
+<p>So the null model recovers the density and nothing more.</p>
 </section>
 <section id="simulating-from-the-model" class="level2">
 <h2 class="anchored" data-anchor-id="simulating-from-the-model">Simulating from the model</h2>
-<p>One of the genuinely useful things about ERGMs is that a fitted model is a probability distribution over networks. We can draw from it and compare what the model produces against what we actually observed.</p>
+<p>One very useful thing about ERGMs is that a fitted model is a probability distribution over networks. We can randomly draw networks from the model and compare what the model produces against what we actually observed.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">simulate</span>(mod1, <span class="at">nsim =</span> <span class="dv">1</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sims)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -406,12 +406,12 @@ AIC: 333.5  BIC: 337.3  (Smaller is better. MC Std. Err. = 0)</code></pre>
 </div>
 </div>
 </div>
-<p>Now compare a handful of statistics between the simulated network and the real one:</p>
+<p>Now that we have simulated one network from our model, let’s compare a handful of statistics between the simulated network and the real one:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(sims <span class="sc">~</span> edges <span class="sc">+</span> mutual <span class="sc">+</span> triangle <span class="sc">+</span> twopath)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   edges   mutual triangle  twopath 
-      66        8       61      228 </code></pre>
+      71        8       81      259 </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(par5 <span class="sc">~</span> edges <span class="sc">+</span> mutual <span class="sc">+</span> triangle <span class="sc">+</span> twopath)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -420,11 +420,11 @@ AIC: 333.5  BIC: 337.3  (Smaller is better. MC Std. Err. = 0)</code></pre>
 </div>
 </div>
 <p>The edge counts line up well, which is what we expected — the model was built to match density. But the observed network has considerably more reciprocated ties and more triangles than the model produces. Teachers tend to ask <em>each other</em> for help, and advice ties cluster into triads. A model assuming independence between ties has no way to represent either pattern.</p>
-<p>That gap is the whole motivation for everything that follows. We want a model whose simulated networks look like the one we observed, not just in density but in the structural features we care about.</p>
+<p>Trying to get the count of relevant statistics in our data to match the simulated networks that come from our fitted model is our main goal. In other words, we want a model whose simulated networks look like the one we observed, not just in density but in the structural features we care about.</p>
 </section>
 <section id="what-the-statistics-actually-count" class="level2">
 <h2 class="anchored" data-anchor-id="what-the-statistics-actually-count">What the statistics actually count</h2>
-<p>Before adding terms, it helps to see what these network statistics are counting. The counts are hard to eyeball even in a small network of 18 nodes, so let’s simulate an even smaller undirected network of 7 nodes:</p>
+<p>Before adding additional terms to our model, it helps to see what these network statistics are counting. The counts are hard to eyeball even in a small network of 18 nodes, so let’s simulate an even smaller undirected network of 7 nodes:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>newmat <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
@@ -476,10 +476,10 @@ AIC: 333.5  BIC: 337.3  (Smaller is better. MC Std. Err. = 0)</code></pre>
 </section>
 <section id="dyadic-independent-terms" class="level2">
 <h2 class="anchored" data-anchor-id="dyadic-independent-terms">Dyadic independent terms</h2>
-<p>Terms are called <em>dyadic independent</em> when the value of one tie does not depend on any other tie. These behave much like predictors in a logistic regression, and the interpretation carries over directly.</p>
+<p>Terms are called <em>dyadic independent</em> when the value of one tie does not depend on any other tie. These behave much like predictors in a logistic regression, and the interpretation carries over directly. In fact, and ergm with only dyadic independent terms collapses to a logisitic regression.</p>
 <section id="categorical-attributes" class="level3">
 <h3 class="anchored" data-anchor-id="categorical-attributes">Categorical attributes</h3>
-<p>Teachers in these data either teach a single grade or multiple grades. We can ask whether that affects the ties they send and receive:</p>
+<p>Teachers in these data either teach a single grade or multiple grades. Multiple grade teachers were level ‘8’ in our data. We can now ask whether that affects the ties they send and receive:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mod2a <span class="ot">&lt;-</span> <span class="fu">ergm</span>(par5 <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">nodeifactor</span>(<span class="st">"GRADE"</span>, <span class="at">levels =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">nodeofactor</span>(<span class="st">"GRADE"</span>, <span class="at">levels =</span> <span class="dv">8</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -539,8 +539,8 @@ coefficient vector of an ergm is deprecated. Use coef(x) instead.</code></pre>
                         1.662821 </code></pre>
 </div>
 </div>
-<p>About <span class="math inline">\(1.6\)</span>. Holding everything else constant, the odds of sending an advice tie increase by a factor of roughly 1.6 when the sender teaches multiple grades rather than one.</p>
-<p>It’s worth verifying that this is really what the coefficient means. The odds that a single-grade teacher sends a tie to another single-grade teacher:</p>
+<p>About <span class="math inline">\(1.6\)</span>. Holding everything else constant, the odds of sending an advice tie increase by a factor of roughly 1.6 when the sender teaches multiple grades rather than teaches in a single grade.</p>
+<p>Let’s clarify what this coefficient means. The odds that a single-grade teacher sends a tie to another single-grade teacher:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">1.56</span>)</span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>a</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -575,7 +575,7 @@ coefficient vector of an ergm is deprecated. Use coef(x) instead.</code></pre>
 </section>
 <section id="homophily" class="level3">
 <h3 class="anchored" data-anchor-id="homophily">Homophily</h3>
-<p>A separate question is whether teachers seek advice from others <em>like</em> themselves. <code>nodematch</code> tests exactly that:</p>
+<p>Homophily is a common finding in networks. Here, let’s examine whether teachers seek advice from others <em>like</em> themselves. <code>nodematch</code> is the term that tests homophily on categorical variables.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>mod2b <span class="ot">&lt;-</span> <span class="fu">ergm</span>(par5 <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"GRADE"</span>, <span class="at">diff =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
@@ -624,7 +624,8 @@ AIC: 329.8  BIC: 337.2  (Smaller is better. MC Std. Err. = 0)</code></pre>
 </section>
 <section id="continuous-attributes" class="level3">
 <h3 class="anchored" data-anchor-id="continuous-attributes">Continuous attributes</h3>
-<p>Continuous attributes work the same way, with <code>nodeicov</code> and <code>nodeocov</code> for receiving and sending effects. Here the attribute is a teacher’s perception of how competitive their school is internally:</p>
+<p>Continuous attributes work the same way, with <code>nodeicov</code> and <code>nodeocov</code> for receiving and sending effects. One of the main variables of interest for me was <strong>competition</strong>. I was interested in how schools shape the competitive climate in which teachers operate, and how perceptions of that climate influence tendencies to seek and/or provide advice.</p>
+<p>Thus, a teacher’s perception of their school’s level of internal competition is a continuous actor attribute, and we can explore the main effects of this attribute as follows.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(par5 <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">nodeicov</span>(<span class="st">"COMP.1"</span>) <span class="sc">+</span> <span class="fu">nodeocov</span>(<span class="st">"COMP.1"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
@@ -665,6 +666,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 AIC: 317.4  BIC: 328.5  (Smaller is better. MC Std. Err. = 0)</code></pre>
 </div>
 </div>
+<p>If we look at the sender effect (<code>nodeocov</code>), a one-unit increase (1 SD in the full sample) in a teacher’s perception of internal competition changes the log odds of sending a tie by −.55. In terms of odds: a one-unit increase in perceived internal competition decreases the odds of sending a tie by 42% (exp(−.55) = .58).</p>
 <p>For homophily on a continuous attribute, <code>absdiff</code> uses the absolute difference between sender and receiver — here, years served in the district:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>mod4 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(par5 <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">absdiff</span>(<span class="st">"YRSDIST"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -710,11 +712,12 @@ AIC: 332.8  BIC: 340.2  (Smaller is better. MC Std. Err. = 0)</code></pre>
       0.9765443 </code></pre>
 </div>
 </div>
-<p>About <span class="math inline">\(0.98\)</span>, so each additional year of difference in tenure reduces the odds of a tie by roughly 2%. Small per year, but it compounds across the range: a twenty-year gap is a substantial penalty.</p>
+<p>Why is our homophily term negative here. <code>absdiff</code> adds up the difference in years across ties. A negative coefficient means ties are less likely the bigger the difference, so teachers with similar tenure are more likely to be tied. Negative = homophily for absdiff.</p>
+<p>So with an exponentiated coefficient of <span class="math inline">\(0.98\)</span>, we find that each additional year of difference in tenure reduces the odds of a tie by roughly 2%. Small per year, but a 10 year gap has a significant impact.</p>
 </section>
 <section id="another-network-as-a-predictor" class="level3">
 <h3 class="anchored" data-anchor-id="another-network-as-a-predictor">Another network as a predictor</h3>
-<p>One of the most useful terms in practice is <code>edgecov</code>, which uses a second network as a dyadic predictor. Here we ask whether friendship predicts advice seeking.</p>
+<p>Another useful term is <code>edgecov</code>, which uses a second network as a dyadic predictor. Here we ask whether friendship predicts advice seeking.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"par.friends.RData"</span>)</span>
 <span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -766,12 +769,12 @@ AIC: 263  BIC: 270.4  (Smaller is better. MC Std. Err. = 0)</code></pre>
            15.55063 </code></pre>
 </div>
 </div>
-<p>Advice ties are roughly 15 times more likely between teachers who are also friends. That row-name check above matters more than it looks — if the two networks are ordered differently, <code>edgecov</code> will silently compare the wrong dyads and hand you a plausible, wrong answer.</p>
+<p>Advice ties are roughly 15 times more likely between teachers who are also friends. The row-name check above is important. If the networks are ordered differently, <code>edgecov</code> will just compare the wrong dyads (with no warning) and simply give you a wrong answer.</p>
 </section>
 </section>
 <section id="where-this-leaves-us" class="level2">
 <h2 class="anchored" data-anchor-id="where-this-leaves-us">Where this leaves us</h2>
-<p>Everything so far assumes ties are independent of one another given the covariates. That assumption is what makes these models straightforward to fit and interpret — and it is also what the earlier simulation showed to be wrong. The excess reciprocity and clustering in the observed network are precisely the patterns dyadic independent terms cannot capture.</p>
+<p>Everything so far assumes ties are independent of one another given the covariates. That assumption is what makes these models straightforward to fit and interpret — and it is also what the earlier simulation showed to be wrong. The additional reciprocity and clustering in the observed network are precisely the patterns dyadic independent terms cannot capture.</p>
 <p><a href="../../blogs/2026-08-09-ergm-interpretation_part2/index.html">The next post</a> takes up dyadic dependent terms along with the model degeneracy, and how to check whether a fitted model actually reproduces the network you started with.</p>
 
 
