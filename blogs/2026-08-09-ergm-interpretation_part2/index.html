@@ -294,7 +294,7 @@ window.Quarto = {
 
 
 <p><a href="../../blogs/2026-08-09-ergm-interpretation_part1/index.html">Part 1</a> built up an ERGM using terms that assume ties form independently of one another. That assumption made the models easy to fit and easy to interpret, but it was not a great model. We saw that the actual observed advice network had more reciprocated ties and more triangles than an independence model could produce.</p>
-<p>This post takes up the terms that can represent those patterns, the estimation problems they bring with them, and how to check whether a fitted model actually reproduces the network you started with.</p>
+<p>This post takes up the dyadic dependent terms that can represent those patterns, discusses some challenges with estimation when those terms are in our model, and explores how to check whether a fitted model is any good.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(statnet)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -303,9 +303,9 @@ window.Quarto = {
 </div>
 <section id="dependence-among-ties" class="level2">
 <h2 class="anchored" data-anchor-id="dependence-among-ties">Dependence among ties</h2>
-<p>The moment we say that whether <span class="math inline">\(i\)</span> sends a tie to <span class="math inline">\(j\)</span> depends on the other ties in the network, we have left logistic regression behind. Two teachers may be more likely to exchange advice because they already share a partner, or because advice tends to be reciprocated. Those are statements about ties conditioning on other ties in the network.</p>
-<p>The classic way to capture clustering was a simple <code>triangle</code> term, counting the triangles a tie would close. A positive coefficient would say triangles appear more often than chance would produce. This makes intuitive sense, but, as we will see, it is a pretty reliable way to break your model.</p>
-<p>The modern alternative is the geometrically weighted edgewise shared partner statistic, <code>gwesp</code>. Rather than counting each additional shared partner equally, it discounts them: going from zero shared partners to one matters a great deal, from five to six much less. That diminishing return is both substantively sensible and far better behaved during estimation.</p>
+<p>As soon as our theory indicates that whether <span class="math inline">\(i\)</span> sends a tie to <span class="math inline">\(j\)</span> depends on the other ties in the network, our model requires dyadic dependent terms and this moves us away from logistic regression. Two teachers may be more likely to exchange advice because they already share a partner, or because advice tends to be reciprocated. Those are statements about ties conditioning on other ties in the network.</p>
+<p>The classic way to capture clustering was a simple <code>triangle</code> term, counting the triangles a tie would close. A positive coefficient would say triangles appear more often than chance would produce. This makes intuitive sense, but, as we will see, it often resulted in degenerate models.</p>
+<p>The current alternative to ‘triangle’ is the geometrically weighted edgewise shared partner statistic, <code>gwesp</code>. Rather than counting each additional shared partner equally, it discounts them: going from zero shared partners to one matters a great deal, from five to six much less. That diminishing return is both substantively sensible and far better behaved during estimation.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod6 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(par5 <span class="sc">~</span> edges <span class="sc">+</span> mutual <span class="sc">+</span> <span class="fu">edgecov</span>(par.friends) <span class="sc">+</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">nodeicov</span>(<span class="st">"COMP.1"</span>) <span class="sc">+</span> <span class="fu">nodeocov</span>(<span class="st">"COMP.1"</span>) <span class="sc">+</span></span>
@@ -333,12 +333,12 @@ window.Quarto = {
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.9696.
+The log-likelihood improved by 0.7544.
 Estimating equations are not within tolerance region.
 Iteration 2 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0369.
-Convergence test p-value: 0.0009. Converged with 99% confidence.
+The log-likelihood improved by 0.0479.
+Convergence test p-value: &lt; 0.0001. Converged with 99% confidence.
 Finished MCMLE.
 Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
 Bridging between the dyad-independent submodel and the full model...
@@ -359,20 +359,20 @@ ergm(formula = par5 ~ edges + mutual + edgecov(par.friends) +
 Monte Carlo Maximum Likelihood Results:
 
                      Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges                -2.21155    0.73946      0  -2.991 0.002783 ** 
-mutual                2.15401    0.55259      0   3.898  &lt; 1e-04 ***
-edgecov.par.friends   2.22535    0.38540      0   5.774  &lt; 1e-04 ***
-nodeicov.COMP.1      -0.07219    0.16128      0  -0.448 0.654427    
-nodeocov.COMP.1      -0.53608    0.15871      0  -3.378 0.000731 ***
-twopath              -0.26519    0.09154      0  -2.897 0.003768 ** 
-gwesp.OTP.fixed.0.25  0.62927    0.27041      0   2.327 0.019961 *  
+edges                -2.28171    0.80209      0  -2.845  0.00445 ** 
+mutual                2.21462    0.51484      0   4.302  &lt; 1e-04 ***
+edgecov.par.friends   2.21812    0.39576      0   5.605  &lt; 1e-04 ***
+nodeicov.COMP.1      -0.04157    0.17574      0  -0.237  0.81301    
+nodeocov.COMP.1      -0.55036    0.15859      0  -3.470  0.00052 ***
+twopath              -0.26477    0.09051      0  -2.925  0.00344 ** 
+gwesp.OTP.fixed.0.25  0.66716    0.25044      0   2.664  0.00772 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
      Null Deviance: 424.2  on 306  degrees of freedom
- Residual Deviance: 214.6  on 299  degrees of freedom
+ Residual Deviance: 214.1  on 299  degrees of freedom
  
-AIC: 228.6  BIC: 254.7  (Smaller is better. MC Std. Err. = 0.3494)</code></pre>
+AIC: 228.1  BIC: 254.2  (Smaller is better. MC Std. Err. = 0.5501)</code></pre>
 </div>
 </div>
 <p>The decay parameter — <code>0.25</code> here — controls how quickly additional shared partners are discounted. Setting <code>fixed = TRUE</code> treats it as known rather than estimating it, which is the common practice though you can also allow for it to be estimated as well. For more information see <a href="https://www.jstor.org/stable/27594198">Hunter and Handcock (2006)</a> as well as <a href="https://www.sciencedirect.com/science/article/abs/pii/S0378873306000396?via%3Dihub">Hunter (2007)</a></p>
@@ -412,75 +412,71 @@ AIC: 228.6  BIC: 254.7  (Smaller is better. MC Std. Err. = 0.3494)</code></pre>
 <pre><code>Iteration 1 of at most 60:</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>1 Optimizing with step length 0.3767.
-The log-likelihood improved by 3.1479.
+<pre><code>1 Optimizing with step length 0.3940.
+The log-likelihood improved by 3.3660.
 Estimating equations are not within tolerance region.
 Iteration 2 of at most 60:
-1 Optimizing with step length 0.6711.
-The log-likelihood improved by 2.0655.
+1 Optimizing with step length 0.7287.
+The log-likelihood improved by 2.2310.
 Estimating equations are not within tolerance region.
 Iteration 3 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.7952.
+The log-likelihood improved by 0.7844.
 Estimating equations are not within tolerance region.
 Iteration 4 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.2328.
+The log-likelihood improved by 0.1323.
 Estimating equations are not within tolerance region.
 Iteration 5 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.1748.
+The log-likelihood improved by 0.1007.
 Estimating equations are not within tolerance region.
 Iteration 6 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.3478.
+The log-likelihood improved by 0.1935.
 Estimating equations are not within tolerance region.
 Iteration 7 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.1504.
-Estimating equations are not within tolerance region.
-Iteration 8 of at most 60:
-1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.5221.
+The log-likelihood improved by 0.4259.
 Estimating equations are not within tolerance region.
 Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
+Iteration 8 of at most 60:
+1 Optimizing with step length 1.0000.
+The log-likelihood improved by 0.4756.
+Estimating equations are not within tolerance region.
 Iteration 9 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.5590.
+The log-likelihood improved by 0.5759.
 Estimating equations are not within tolerance region.
+Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
 Iteration 10 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.2613.
+The log-likelihood improved by 0.5195.
 Estimating equations are not within tolerance region.
 Iteration 11 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.1627.
-Estimating equations are not within tolerance region.
+The log-likelihood improved by 0.0855.
+Convergence test p-value: 0.9497. Not converged with 99% confidence; increasing sample size.
 Iteration 12 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.2423.
-Estimating equations are not within tolerance region.
+The log-likelihood improved by 0.0485.
+Convergence test p-value: 0.0636. Not converged with 99% confidence; increasing sample size.
 Iteration 13 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.2959.
-Estimating equations are not within tolerance region.
-Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
+The log-likelihood improved by 0.0315.
+Convergence test p-value: 0.0336. Not converged with 99% confidence; increasing sample size.
 Iteration 14 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.2007.
-Estimating equations are not within tolerance region.
+The log-likelihood improved by 0.0240.
+Convergence test p-value: 0.1031. Not converged with 99% confidence; increasing sample size.
 Iteration 15 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0599.
-Convergence test p-value: 0.9651. Not converged with 99% confidence; increasing sample size.
+The log-likelihood improved by 0.0336.
+Convergence test p-value: 0.0184. Not converged with 99% confidence; increasing sample size.
 Iteration 16 of at most 60:
 1 Optimizing with step length 1.0000.
-The log-likelihood improved by 0.0683.
-Convergence test p-value: 0.5471. Not converged with 99% confidence; increasing sample size.
-Iteration 17 of at most 60:
-1 Optimizing with step length 1.0000.
 The log-likelihood improved by 0.0390.
-Convergence test p-value: 0.0041. Converged with 99% confidence.
+Convergence test p-value: 0.0014. Converged with 99% confidence.
 Finished MCMLE.
 Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
 Bridging between the dyad-independent submodel and the full model...
@@ -505,39 +501,39 @@ ergm(formula = par5 ~ edges + mutual + twopath + gwesp(0.693,
 Monte Carlo Maximum Likelihood Results:
 
                       Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges                 -0.22632    1.25342      0  -0.181 0.856711    
-mutual                 2.37994    0.68570      0   3.471 0.000519 ***
-twopath               -0.40876    0.17110      0  -2.389 0.016895 *  
-gwesp.OTP.fixed.0.693  0.47280    0.22844      0   2.070 0.038486 *  
-gwdsp.OTP.fixed.0.693 -0.12137    0.19426      0  -0.625 0.532109    
-edgecov.par.friends    2.32764    0.46312      0   5.026  &lt; 1e-04 ***
-gwideg.fixed.0.693     2.14051    1.91294      0   1.119 0.263155    
-gwodeg.fixed.0.693    -0.69803    1.13211      0  -0.617 0.537516    
-nodematch.GRADE        0.85749    0.38576      0   2.223 0.026226 *  
-absdiff.YRSDIST       -0.01369    0.01685      0  -0.813 0.416431    
-nodeicov.YRSDIST      -0.01830    0.02243      0  -0.816 0.414712    
-nodeocov.YRSDIST       0.01750    0.01970      0   0.888 0.374304    
-nodeifactor.EDUC.2     0.06825    0.43864      0   0.156 0.876344    
-nodeofactor.EDUC.2    -0.03369    0.37978      0  -0.089 0.929306    
-nodeicov.EFFIC        -0.75792    0.30553      0  -2.481 0.013115 *  
-nodeocov.EFFIC        -0.67199    0.29605      0  -2.270 0.023216 *  
-nodeicov.COMP.1       -0.63400    0.29520      0  -2.148 0.031739 *  
-nodeocov.COMP.1       -0.60327    0.25607      0  -2.356 0.018479 *  
+edges                 -0.16309    1.32657      0  -0.123 0.902156    
+mutual                 2.40113    0.67204      0   3.573 0.000353 ***
+twopath               -0.41123    0.17344      0  -2.371 0.017738 *  
+gwesp.OTP.fixed.0.693  0.47400    0.22230      0   2.132 0.032985 *  
+gwdsp.OTP.fixed.0.693 -0.12482    0.18878      0  -0.661 0.508494    
+edgecov.par.friends    2.34383    0.45292      0   5.175  &lt; 1e-04 ***
+gwideg.fixed.0.693     1.98599    1.93584      0   1.026 0.304935    
+gwodeg.fixed.0.693    -0.67111    1.14539      0  -0.586 0.557924    
+nodematch.GRADE        0.84619    0.38007      0   2.226 0.025988 *  
+absdiff.YRSDIST       -0.01192    0.01749      0  -0.681 0.495574    
+nodeicov.YRSDIST      -0.01805    0.02241      0  -0.805 0.420570    
+nodeocov.YRSDIST       0.01597    0.01917      0   0.833 0.404875    
+nodeifactor.EDUC.2     0.05147    0.42419      0   0.121 0.903425    
+nodeofactor.EDUC.2    -0.04213    0.37667      0  -0.112 0.910942    
+nodeicov.EFFIC        -0.77156    0.29836      0  -2.586 0.009710 ** 
+nodeocov.EFFIC        -0.69509    0.28183      0  -2.466 0.013649 *  
+nodeicov.COMP.1       -0.63514    0.29391      0  -2.161 0.030696 *  
+nodeocov.COMP.1       -0.62907    0.26335      0  -2.389 0.016906 *  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
      Null Deviance: 424.2  on 306  degrees of freedom
- Residual Deviance: 183.7  on 288  degrees of freedom
+ Residual Deviance: 184.2  on 288  degrees of freedom
  
-AIC: 219.7  BIC: 286.7  (Smaller is better. MC Std. Err. = 0.4675)</code></pre>
+AIC: 220.2  BIC: 287.3  (Smaller is better. MC Std. Err. = 0.5069)</code></pre>
 </div>
 </div>
-<p>The <code>gwidegree</code> and <code>gwodegree</code> terms deserve a word of caution, because their signs read backwards from what people expect. A negative coefficient indicates <em>centralization</em> — degree concentrated among fewer actors — rather than the opposite. Reading these the wrong way is a common error. Here is a great explainer by <a href="https://figshare.com/articles/poster/Interpretation_of_GW-Degree_Estimates_in_ERGMs/3465020?file=5454032">Levy and colleagues</a> along with a link to an awesome shiny app to see this in action.</p>
+<p>The <code>gwidegree</code> and <code>gwodegree</code> terms deserve a word of caution, because the direction of the relationship has often been misinterpreted. A negative coefficient indicates <em>centralization</em> — degree concentrated among fewer actors — rather than the opposite. Reading these the wrong way is a common error. Here is a great explainer by <a href="https://figshare.com/articles/poster/Interpretation_of_GW-Degree_Estimates_in_ERGMs/3465020?file=5454032">Levy and colleagues</a> along with a link to an awesome shiny app to see this in action.</p>
 </section>
 <section id="degeneracy" class="level2">
 <h2 class="anchored" data-anchor-id="degeneracy">Degeneracy</h2>
 <p>Let’s move on to what happens when our model fails to converge and thus is degenerate. Model degeneracy means the fitted parameters imply a distribution that places nearly all its probability on networks that look nothing like the one we observed.</p>
-<p>The <code>triangle</code> term is a well known problem as an ergm term for producing degenerate models. We will use a simulated high school friendship network that comes with the <code>statnet</code> package for demonstration purposes.</p>
+<p>As noted above, the <code>triangle</code> term is a well known problem in models and leads to degeneracy. We will use a simulated high school friendship network that comes with the <code>statnet</code> package for demonstration purposes.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"faux.magnolia.high"</span>)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>magnolia <span class="ot">&lt;-</span> faux.magnolia.high</span>
@@ -580,44 +576,35 @@ AIC: 219.7  BIC: 286.7  (Smaller is better. MC Std. Err. = 0.4675)</code></pre>
 ! Number of edges in a simulated network exceeds that in the observed by a factor of more than 20. This is a strong indicator of model degeneracy or a very poor starting parameter configuration. If you are reasonably certain that neither of these is the case, increase the MCMLE.density.guard control.ergm() parameter.</code></pre>
 </div>
 </div>
-<p>The estimation fails. Notice that it does not return a poorly fitting model. Rather, it returns nothing at all, which means there is no fitted object to run diagnostics on. The failure happens upstream of anything we could inspect. And because of this, we will need to build a poor model ourselves.</p>
+<p>The estimation fails. Notice that it does not return a poorly fitting model. Rather, it returns nothing at all, which means there is no fitted object to run diagnostics on.</p>
 <section id="watching-it-fail" class="level3">
 <h3 class="anchored" data-anchor-id="watching-it-fail">Watching it fail</h3>
 <p>To see what is going wrong, we can turn the problem around. Instead of asking which coefficients best fit the data, we will pick coefficients ourselves and ask what networks they imply.</p>
-<p>Let’s choose a modest positive triangle coefficient. From this, we will generate a chain of networks from it:</p>
+<p>Let’s choose a modest positive triangle coefficient. From this, we will generate a chain of 500 networks:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>sim.chain <span class="ot">&lt;-</span> <span class="fu">simulate</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> triangle,</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">coef =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="fl">0.5</span>),</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">nsim =</span> <span class="dv">500</span>,</span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">output =</span> <span class="st">"stats"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■                    43% |  ETA:  3s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■               59% |  ETA:  2s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■               61% |  ETA:  3s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■          77% |  ETA:  2s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■           72% |  ETA:  3s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      89% |  ETA:  1s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■         81% |  ETA:  3s</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■       87% |  ETA:  2s</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     93% |  ETA:  1s</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   99% |  ETA:  0s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% |  ETA:  0s</code></pre>
 </div>
 </div>
 <p>Each row is one network drawn from the model. Plotting the edge count across the chain, with the observed value marked in red:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"edges"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Edges"</span>,</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Edge count across simulated networks"</span>)</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> edges), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"edges"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Edges"</span>,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Edge count across simulated networks"</span>)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> edges), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -628,10 +615,10 @@ AIC: 219.7  BIC: 286.7  (Smaller is better. MC Std. Err. = 0.4675)</code></pre>
 </div>
 <p>And the triangle count:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"triangle"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Triangles"</span>,</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Triangle count across simulated networks"</span>)</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> triangle), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sim.chain[, <span class="st">"triangle"</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Simulation"</span>, <span class="at">ylab =</span> <span class="st">"Triangles"</span>,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Triangle count across simulated networks"</span>)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">summary</span>(magnolia <span class="sc">~</span> triangle), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -640,15 +627,15 @@ AIC: 219.7  BIC: 286.7  (Smaller is better. MC Std. Err. = 0.4675)</code></pre>
 </div>
 </div>
 </div>
-<p>This is degeneracy made visible. The chain does not settle anywhere near the observed network. Here the red line is the observed number of edges and triangles. In both plots, the simulated network statistics for edges and triangles climbs, and keeps climbing, toward networks far denser than anything in the data. A model whose simulated networks look like this cannot possibly be fit to the observed one, because there is no region of the parameter space where the observed network sits near the middle of the model’s own distribution.</p>
+<p>This is a clear example of a degenerate model. The chain does not settle anywhere near the observed network. Here the red line is the observed number of edges and triangles. In both plots, the simulated network statistics for edges and triangles climbs, and keeps climbing, toward networks far denser than anything in the data. A model whose simulated networks look like this cannot possibly be fit to the observed one, because there is no region of the parameter space where the observed network sits near the middle of the model’s own distribution.</p>
 <p>Compare the magnitudes directly:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> triangle)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> triangle)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   edges triangle 
      974      169 </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(sim.chain)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(sim.chain)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    edges  triangle 
  109728.5 1311768.2 </code></pre>
@@ -657,19 +644,19 @@ AIC: 219.7  BIC: 286.7  (Smaller is better. MC Std. Err. = 0.4675)</code></pre>
 </section>
 <section id="why-the-triangle-term-does-this" class="level3">
 <h3 class="anchored" data-anchor-id="why-the-triangle-term-does-this">Why the triangle term does this</h3>
-<p>The mechanism of why this is happening is worth understanding, because it explains why this problem is specific to terms like <code>triangle</code> rather than a general failing of ERGMs.</p>
-<p>Every tie that closes a triangle makes additional triangles more likely, which makes additional ties more likely, which closes more triangles. The statistic feeds back on itself with nothing to dampen it. Adding the hundredth shared partner counts exactly as much as adding the first, so the model has no way to express “clustering is good, but in moderation.”</p>
+<p>Let’s try to understand more about why this occurs and why the geometrically weighted terms provide a solution.</p>
+<p>With a positive coefficient on the <code>triangle</code> term , every tie that closes a triangle makes additional triangles more likely, which makes additional ties more likely, which closes more triangles. The statistic feeds back on itself with nothing to dampen it. Adding the hundredth shared partner counts exactly as much as adding the first, so the model has no way to express “clustering is good, but in moderation.”</p>
 </section>
 <section id="the-fix" class="level3">
 <h3 class="anchored" data-anchor-id="the-fix">The fix</h3>
-<p>The fix is not a better optimizer or a longer chain. It is a better specification.</p>
-<p>Two changes we can make to our specification. First, replace <code>triangle</code> with <code>gwesp</code>, whose geometric discounting means each additional shared partner contributes less than the one before. This is precisely the dampening the raw triangle count lacks. Second, give the model attribute terms that account for clustering the structural term was otherwise being asked to absorb on its own.</p>
+<p>The fix is a term for capturing the diminishing marginal returns of additional triadic closure.</p>
+<p>Thus, we replace <code>triangle</code> with <code>gwesp</code>, whose geometric discounting means each additional shared partner contributes less than the one before. This is precisely the dampening the raw triangle count lacked. In addition, let’s also add several attribute terms that also help account for clustering in the network.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">gwesp</span>(<span class="fl">0.25</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">nodematch</span>(<span class="st">"Grade"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Race"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Sex"</span>),</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">control =</span> <span class="fu">control.ergm</span>(<span class="at">seed =</span> <span class="dv">1</span>,</span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.samplesize =</span> <span class="dv">50000</span>,</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.interval =</span> <span class="dv">1000</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">ergm</span>(magnolia <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">gwesp</span>(<span class="fl">0.25</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">nodematch</span>(<span class="st">"Grade"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Race"</span>) <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"Sex"</span>),</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">control =</span> <span class="fu">control.ergm</span>(<span class="at">seed =</span> <span class="dv">1</span>,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.samplesize =</span> <span class="dv">50000</span>,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">MCMC.interval =</span> <span class="dv">1000</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
 </div>
@@ -692,55 +679,37 @@ AIC: 219.7  BIC: 286.7  (Smaller is better. MC Std. Err. = 0.4675)</code></pre>
 <pre><code>Iteration 1 of at most 60:</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■                                 3% |  ETA:  1m</code></pre>
+<pre><code>Sampling ■■■■                              10% |  ETA: 21s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■                               9% |  ETA: 44s</code></pre>
+<pre><code>Sampling ■■■■■■■■                          23% |  ETA: 18s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■                            17% |  ETA: 37s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■                      36% |  ETA: 15s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■                         28% |  ETA: 27s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■                   48% |  ETA: 12s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■                      36% |  ETA: 24s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■               60% |  ETA:  9s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■                    43% |  ETA: 22s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■           73% |  ETA:  6s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■                  49% |  ETA: 20s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■       86% |  ETA:  3s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■                56% |  ETA: 18s</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■              63% |  ETA: 15s</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■            69% |  ETA: 13s</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■          75% |  ETA: 10s</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■        83% |  ETA:  7s</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      91% |  ETA:  4s</code></pre>
+<pre><code>Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   99% |  ETA:  0s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>1 Optimizing with step length 0.9550.
 The log-likelihood improved by 6.5439.
 Estimating equations are not within tolerance region.
 Iteration 2 of at most 60:
-Sampling ■■■                                7% |  ETA: 18s
-Sampling ■■■■■■■■                          23% |  ETA: 15s
-Sampling ■■■■■■■■■■■■                      38% |  ETA: 12s
-Sampling ■■■■■■■■■■■■■■■■■                 53% |  ETA:  9s
-Sampling ■■■■■■■■■■■■■■■■■■■■■             68% |  ETA:  6s
-Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■        84% |  ETA:  3s
+Sampling ■■■■■■■                           21% |  ETA:  9s
+Sampling ■■■■■■■■■■■■■■■                   47% |  ETA:  6s
+Sampling ■■■■■■■■■■■■■■■■■■■■■■■           72% |  ETA:  3s
 Sampling ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    98% |  ETA:  0s
 1 Optimizing with step length 1.0000.
 The log-likelihood improved by 0.0914.
@@ -755,7 +724,7 @@ Bridging finished.
 This model was fit using MCMC.  To examine model diagnostics and check
 for degeneracy, use the mcmc.diagnostics() function.</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 ergm(formula = magnolia ~ edges + gwesp(0.25, fixed = TRUE) + 
@@ -780,9 +749,9 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 AIC: 12144  BIC: 12203  (Smaller is better. MC Std. Err. = 0.9025)</code></pre>
 </div>
 </div>
-<p>This one estimates. Now we have a fitted object, so we can look at the diagnostics that were unavailable before:</p>
+<p>Now our model converges and we are able to get coefficient estimates. Now that we have a fitted object, so we can look at the diagnostics that were unavailable before:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -897,39 +866,39 @@ Note: MCMC diagnostics shown here are from the last round of
   GOF=~model).</code></pre>
 </div>
 </div>
-<p>Read the trace plots on the left first. Each shows the difference between the simulated and observed value of a statistic as the chain progresses. What you want is a stationary band with values bouncing around zero with no trend. The density plots on the right should be roughly symmetric and centered at zero, indicating that simulated networks resemble the observed one on each statistic.</p>
+<p>The plots on the left are known as trace plots. Each shows the difference between the simulated and observed value of a statistic as the chain progresses. What you want is a stationary band with values bouncing around zero with no trend. The density plots on the right should be roughly symmetric and centered at zero, indicating that simulated networks resemble the observed one on each statistic.</p>
 <p>Compare these with the runaway chains we saw above. There the statistics moved quickly away from the observed values and never returned. Here they bounce around them randomly and are always centered on the true value.</p>
 <p>This model takes a few minutes to run. Depending on your network’s size and model complexity, some ERGM specifications run for hours or long. Starting a model before bed and hoping to find a converged one in the morning is a reasonable routine.</p>
 </section>
 <section id="a-point-to-remember" class="level3">
 <h3 class="anchored" data-anchor-id="a-point-to-remember">A point to remember</h3>
 <p>Notice what actually changed between the model that failed and the model that worked. Students form friendships with others in the same grade, of the same race, of the same sex, and those homophilous ties produce triangles as a byproduct. In our failed model, we asked the triangle term to explain all of that clustering on its own, and so it kept wanting to build more and more triangles and resulted in a degenerate model. Thus you need to think carefully about the processes at work in your network and use the ergm terms that capture those processes in your model.</p>
-<p>Degeneracy usually looks like a computational problem and usually is not one. It is the model telling you that your specification is wrong.</p>
+<p>Degeneracy usually looks like a computational problem but it is mostly about a poor model specification. As always, theory needs to come first.</p>
 </section>
 </section>
 <section id="goodness-of-fit" class="level2">
 <h2 class="anchored" data-anchor-id="goodness-of-fit">Goodness of fit</h2>
-<p>Convergence is not fit. A model can converge cleanly and still fail to reproduce different features of the network. There are two questions worth asking, and they are different.</p>
-<p>First, does the model reproduce the statistics it was fit on?</p>
+<p>Simply getting a model to converge does not mean we have a good model fit. A model can converge cleanly and still fail to reproduce different features of the network. In general, we ask two questions about our model to understand its fit.</p>
+<p>First, does the model reproduce the statistics it was fit on? This is mostly about degeneracy and convergence.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gof</span>(mod6, <span class="at">GOF =</span> <span class="sc">~</span> model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gof</span>(mod6, <span class="at">GOF =</span> <span class="sc">~</span> model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Goodness-of-fit for model statistics 
 
-                            obs       min      mean       max MC p-value
-edges                 71.000000  57.00000  70.14000  85.00000       0.84
-mutual                19.000000  12.00000  18.94000  27.00000       1.00
-edgecov.par.friends   63.000000  48.00000  62.07000  78.00000       0.96
-nodeicov.COMP.1       33.348969  13.40890  32.64541  54.25384       0.90
-nodeocov.COMP.1       -5.223239 -21.55766  -4.63717  15.96282       1.00
-twopath              240.000000 155.00000 234.27000 336.00000       0.86
-gwesp.OTP.fixed.0.25  63.515073  37.10600  60.65358  86.95803       0.64</code></pre>
+                            obs        min       mean        max MC p-value
+edges                 71.000000  59.000000  71.240000  84.000000        1.0
+mutual                19.000000  11.000000  19.340000  29.000000        1.0
+edgecov.par.friends   63.000000  52.000000  63.000000  73.000000        1.0
+nodeicov.COMP.1       33.348969   8.169827  33.827451  56.844155        1.0
+nodeocov.COMP.1       -5.223239 -27.452915  -6.083205   9.811535        0.9
+twopath              240.000000 170.000000 242.550000 370.000000        0.9
+gwesp.OTP.fixed.0.25  63.515073  42.588117  64.595541  90.503008        0.9</code></pre>
 </div>
 </div>
-<p>Second — and more demanding — does it reproduce features it was <em>not</em> fit on?</p>
+<p>Second, does it reproduce features it was <em>not</em> fit on? Here we are looking to see if our model simulates networks that have similar macro properties to our observed network. It is important to note here, that no term in our model ensures that we capture these macro properties. Rather, they are built up from the small, local terms we put in our model.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -969,7 +938,7 @@ gwesp.OTP.fixed.0.25  63.515073  37.10600  60.65358  86.95803       0.64</code><
 <p>This gives the standard out-of-model comparisons: degree distribution, edgewise shared partners, geodesic distances. In each panel the observed network is the solid line and the simulated distribution is the boxplots. You want the observed line sitting inside the bulk of the simulated range. Where it strays outside, the model is missing something.</p>
 <p>You can also name your own statistic, like the triad census, and a model reproducing the full census is capturing local structure well:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6 <span class="sc">~</span> triadcensus))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gof</span>(mod6 <span class="sc">~</span> triadcensus))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
