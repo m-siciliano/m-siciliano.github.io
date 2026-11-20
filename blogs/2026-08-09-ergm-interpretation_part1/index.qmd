@@ -32,7 +32,7 @@ par5
 
 The simplest possible ERGM says that every tie forms independently, with some
 constant probability. In ERGM syntax that is a model with nothing but an
-`edges` term.
+`edges` term. This is equivalnt to an intercept only regression model.
 
 ```{r}
 mod1 <- ergm(par5 ~ edges)
@@ -52,9 +52,9 @@ Roughly $0.23$. This value is exactly the density of the network:
 gden(par5)
 ```
 
-This is worth sitting with for a moment. In a model where the only thing
+Take a second to think about this. In a model where the only thing
 governing tie formation is a constant probability, the fitted probability *has*
-to be the observed density — there is nothing else in the model to explain
+to be the observed density as there is nothing else in the model to explain
 anything. We can confirm the arithmetic directly:
 
 ```{r}
@@ -63,13 +63,12 @@ network.edgecount(par5)   # observed ties
 network.edgecount(par5) / network.dyadcount(par5)
 ```
 
-So the null model recovers the density and nothing more. The question is
-whether density alone is a good description of this network.
+So the null model recovers the density and nothing more. 
 
 ## Simulating from the model
 
-One of the genuinely useful things about ERGMs is that a fitted model is a
-probability distribution over networks. We can draw from it and compare what
+One very useful thing about ERGMs is that a fitted model is a
+probability distribution over networks. We can randomly draw networks from the model and compare what
 the model produces against what we actually observed.
 
 ```{r}
@@ -77,7 +76,7 @@ sims <- simulate(mod1, nsim = 1)
 plot(sims)
 ```
 
-Now compare a handful of statistics between the simulated network and the real
+Now that we have simulated one network from our model, let's compare a handful of statistics between the simulated network and the real
 one:
 
 ```{r}
@@ -91,13 +90,12 @@ ties and more triangles than the model produces. Teachers tend to ask *each othe
 model assuming independence between ties has no way to represent either
 pattern.
 
-That gap is the whole motivation for everything that follows. We want a model
-whose simulated networks look like the one we observed, not just in density but
+Trying to get the count of relevant statistics in our data to match the simulated networks that come from our fitted model is our main goal. In other words, we want a model whose simulated networks look like the one we observed, not just in density but
 in the structural features we care about.
 
 ## What the statistics actually count
 
-Before adding terms, it helps to see what these network statistics are counting.
+Before adding additional terms to our model, it helps to see what these network statistics are counting.
 The counts are hard to eyeball even in a small network of 18 nodes, so let's simulate an even smaller
 undirected network of 7 nodes:
 
@@ -138,14 +136,11 @@ terms that are structurally entangled with one another.
 
 ## Dyadic independent terms
 
-Terms are called *dyadic independent* when the value of one tie does not depend
-on any other tie. These behave much like predictors in a logistic regression,
-and the interpretation carries over directly.
+Terms are called *dyadic independent* when the value of one tie does not depend on any other tie. These behave much like predictors in a logistic regression, and the interpretation carries over directly. In fact, and ergm with only dyadic independent terms collapses to a logisitic regression.
 
 ### Categorical attributes
 
-Teachers in these data either teach a single grade or multiple grades. We can
-ask whether that affects the ties they send and receive:
+Teachers in these data either teach a single grade or multiple grades. Multiple grade teachers were level '8' in our data. We can now ask whether that affects the ties they send and receive:
 
 ```{r}
 mod2a <- ergm(par5 ~ edges + nodeifactor("GRADE", levels = 8) +
@@ -153,19 +148,15 @@ mod2a <- ergm(par5 ~ edges + nodeifactor("GRADE", levels = 8) +
 summary(mod2a)
 ```
 
-The coefficient on outgoing ties is about $0.51$. As a log-odds this is not
-very interpretable, so exponentiate it:
+The coefficient on outgoing ties is about $0.51$. As a log-odds this is not very interpretable, so exponentiate it:
 
 ```{r}
 exp(mod2a$coef[3])
 ```
 
-About $1.6$. Holding everything else constant, the odds of sending an advice tie
-increase by a factor of roughly 1.6 when the sender teaches multiple grades
-rather than one.
+About $1.6$. Holding everything else constant, the odds of sending an advice tie increase by a factor of roughly 1.6 when the sender teaches multiple grades rather than teaches in a single grade.
 
-It's worth verifying that this is really what the coefficient means. The odds
-that a single-grade teacher sends a tie to another single-grade teacher:
+Let's clarify what this coefficient means. The odds that a single-grade teacher sends a tie to another single-grade teacher:
 
 ```{r}
 a <- exp(-1.56)
@@ -191,8 +182,7 @@ Slightly below and slightly above the overall density, respectively.
 
 ### Homophily
 
-A separate question is whether teachers seek advice from others *like*
-themselves. `nodematch` tests exactly that:
+Homophily is a common finding in networks. Here, let's examine whether teachers seek advice from others *like* themselves. `nodematch` is the term that tests homophily on categorical variables.
 
 ```{r}
 mod2b <- ergm(par5 ~ edges + nodematch("GRADE", diff = FALSE))
@@ -200,24 +190,22 @@ summary(mod2b)
 exp(mod2b$coef[2])
 ```
 
-The odds of a tie between two teachers of the same grade are roughly 2.2 times
-the odds of a tie between teachers of different grades. Setting `diff = TRUE`
-would estimate a separate homophily parameter for each grade, which is worth
-doing when you suspect the tendency varies across categories.
+The odds of a tie between two teachers of the same grade are roughly 2.2 times the odds of a tie between teachers of different grades. Setting `diff = TRUE` would estimate a separate homophily parameter for each grade, which is worth doing when you suspect the tendency varies across categories.
 
 ### Continuous attributes
 
-Continuous attributes work the same way, with `nodeicov` and `nodeocov` for
-receiving and sending effects. Here the attribute is a teacher's perception of
-how competitive their school is internally:
+Continuous attributes work the same way, with `nodeicov` and `nodeocov` for receiving and sending effects. One of the main variables of interest for me was **competition**. I was interested in how schools shape the competitive climate in which teachers operate, and how perceptions of that climate influence tendencies to seek and/or provide advice.
+
+Thus, a teacher's perception of their school's level of internal competition is a continuous actor attribute, and we can explore the main effects of this attribute as follows.
 
 ```{r}
 mod3 <- ergm(par5 ~ edges + nodeicov("COMP.1") + nodeocov("COMP.1"))
 summary(mod3)
 ```
 
-For homophily on a continuous attribute, `absdiff` uses the absolute difference
-between sender and receiver — here, years served in the district:
+If we look at the sender effect (`nodeocov`), a one-unit increase (1 SD in the full sample) in a teacher's perception of internal competition changes the log odds of sending a tie by −.55. In terms of odds: a one-unit increase in perceived internal competition decreases the odds of sending a tie by 42% (exp(−.55) = .58).
+
+For homophily on a continuous attribute, `absdiff` uses the absolute difference between sender and receiver — here, years served in the district:
 
 ```{r}
 mod4 <- ergm(par5 ~ edges + absdiff("YRSDIST"))
@@ -225,15 +213,14 @@ summary(mod4)
 exp(mod4$coef[2])
 ```
 
-About $0.98$, so each additional year of difference in tenure reduces the odds
-of a tie by roughly 2%. Small per year, but it compounds across the range: a
-twenty-year gap is a substantial penalty.
+Why is our homophily term negative here. `absdiff` adds up the difference in years across ties. A negative coefficient means ties are less likely the bigger the difference, so teachers with similar tenure are more likely to be tied. Negative = homophily for absdiff.
+
+So with an exponentiated coefficient of $0.98$, we find that each additional year of difference in tenure reduces the odds
+of a tie by roughly 2%. Small per year, but a 10 year gap has a significant impact.
 
 ### Another network as a predictor
 
-One of the most useful terms in practice is `edgecov`, which uses a second
-network as a dyadic predictor. Here we ask whether friendship predicts advice
-seeking.
+Another useful term is `edgecov`, which uses a second network as a dyadic predictor. Here we ask whether friendship predicts advice seeking.
 
 ```{r}
 load("par.friends.RData")
@@ -246,19 +233,12 @@ summary(mod5)
 exp(mod5$coef[2])
 ```
 
-Advice ties are roughly 15 times more likely between teachers who are also
-friends. That row-name check above matters more than it looks — if the two
-networks are ordered differently, `edgecov` will silently compare the wrong
-dyads and hand you a plausible, wrong answer.
+Advice ties are roughly 15 times more likely between teachers who are also friends. The row-name check above is important. If the networks are ordered differently, `edgecov` will just compare the wrong dyads (with no warning) and simply give you a wrong answer.
 
 ## Where this leaves us
 
-Everything so far assumes ties are independent of one another given the
-covariates. That assumption is what makes these models straightforward to fit
-and interpret — and it is also what the earlier simulation showed to be wrong.
-The excess reciprocity and clustering in the observed network are precisely the
-patterns dyadic independent terms cannot capture.
+Everything so far assumes ties are independent of one another given the covariates. That assumption is what makes these models straightforward to fit
+and interpret — and it is also what the earlier simulation showed to be wrong. The additional reciprocity and clustering in the observed network are precisely the patterns dyadic independent terms cannot capture.
 
-[The next post](../2026-08-09-ergm-interpretation_part2/index.qmd) takes up dyadic
-dependent terms along with the model degeneracy, and how to
+[The next post](../2026-08-09-ergm-interpretation_part2/index.qmd) takes up dyadic dependent terms along with the model degeneracy, and how to
 check whether a fitted model actually reproduces the network you started with.
